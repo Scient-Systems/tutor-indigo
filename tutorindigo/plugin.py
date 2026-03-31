@@ -116,24 +116,30 @@ indigo_styled_mfes = [
     "discussions",
 ]
 
-for mfe in indigo_styled_mfes:
-    hooks.Filters.ENV_PATCHES.add_items(
-        [
-            (
-                f"mfe-dockerfile-post-npm-install-{mfe}",
-                """
-RUN npm install react-responsive @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons '@edx/frontend-component-header@npm:@edx/frontend-component-header-edx@latest' '@edx/brand@git+https://github.com/edly-io/brand-openedx.git#indigo-2.5.1'
-""",  # noqa: E501
-            ),
-        ]
-    )
+# All MFEs that need header component dependencies
+all_mfes_needing_deps = [
+    "learning",
+    "learner-dashboard",
+    "profile",
+    "account",
+    "discussions",
+    "authn",
+    "admin-console",
+    "authoring",
+    "gradebook",
+    "ora-grading",
+    "communications",
+]
 
-hooks.Filters.ENV_PATCHES.add_item(
-    (
-        "mfe-dockerfile-post-npm-install-authn",
-        "RUN npm install react-responsive @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons '@edx/frontend-component-header@npm:@edx/frontend-component-header-edx@latest' '@edx/brand@git+https://github.com/edly-io/brand-openedx.git#indigo-2.5.1'",
+mfe_deps_install = "RUN npm install react-responsive @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core"
+
+for mfe in all_mfes_needing_deps:
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            f"mfe-dockerfile-post-npm-install-{mfe}",
+            mfe_deps_install,
+        )
     )
-)
 
 # Include js file in lms main.html, main_django.html, and certificate.html
 
