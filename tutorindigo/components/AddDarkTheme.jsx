@@ -2,7 +2,35 @@
 let themeVariant = 'selected-paragon-theme-variant';
 
 const AddDarkTheme = () => {
-  const isThemeToggleEnabled = getConfig().INDIGO_ENABLE_DARK_TOGGLE;
+  const config = getConfig();
+  const isThemeToggleEnabled = config.INDIGO_ENABLE_DARK_TOGGLE;
+  const primaryColor = config.INDIGO_PRIMARY_COLOR || '#15376D';
+
+  const injectPrimaryColorOverride = () => {
+    const existingStyle = document.getElementById('indigo-primary-override');
+    if (existingStyle) return;
+
+    const style = document.createElement('style');
+    style.id = 'indigo-primary-override';
+    style.textContent = `
+      :root {
+        --pgn-color-primary: ${primaryColor} !important;
+        --pgn-color-primary-base: ${primaryColor} !important;
+      }
+      .btn-primary, .btn-brand {
+        background-color: ${primaryColor} !important;
+        border-color: ${primaryColor} !important;
+      }
+      .btn-primary:hover, .btn-brand:hover {
+        background-color: ${primaryColor} !important;
+        filter: brightness(0.9);
+      }
+      a:not(.btn) {
+        color: ${primaryColor};
+      }
+    `;
+    document.head.appendChild(style);
+  };
 
   const addDarkThemeToIframes = () => {
     const iframes = document.getElementsByTagName('iframe');
@@ -26,6 +54,9 @@ const AddDarkTheme = () => {
   };
 
   useEffect(() => {
+    // Inject primary color override
+    injectPrimaryColorOverride();
+
     const theme = window.localStorage.getItem(themeVariant);
 
     // - When page loads, Footer loads before MFE content. Since there is no iframe on page,

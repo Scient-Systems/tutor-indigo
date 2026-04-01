@@ -24,7 +24,7 @@ config: t.Dict[str, t.Dict[str, t.Any]] = {
     "defaults": {
         "VERSION": __version__,
         "WELCOME_MESSAGE": "The place for all your online learning",
-        "PRIMARY_COLOR": "#15376D",  # Indigo
+        "PRIMARY_COLOR": "#4CAF50",  # Indigo
         "ENABLE_DARK_TOGGLE": True,
         # Footer links are dictionaries with a "title" and "url"
         # To remove all links, run:
@@ -122,7 +122,7 @@ for mfe in indigo_styled_mfes:
             (
                 f"mfe-dockerfile-post-npm-install-{mfe}",
                 """
-RUN npm install '@edx/brand@git+https://github.com/Scient-Systems/brand-openedx.git#indigo-2.5.1'
+RUN npm install '@edx/brand@git+https://github.com/edly-io/brand-openedx.git#indigo-2.5.1'
 """,  # noqa: E501
             ),
         ]
@@ -131,7 +131,7 @@ RUN npm install '@edx/brand@git+https://github.com/Scient-Systems/brand-openedx.
 hooks.Filters.ENV_PATCHES.add_item(
     (
         "mfe-dockerfile-post-npm-install-authn",
-        "RUN npm install '@edx/brand@git+https://github.com/Scient-Systems/brand-openedx.git#indigo-2.5.1'",
+        "RUN npm install '@edx/brand@git+https://github.com/edly-io/brand-openedx.git#indigo-2.5.1'",
     )
 )
 
@@ -164,6 +164,7 @@ for filename in javascript_files:
 
 MFE_CONFIG['INDIGO_ENABLE_DARK_TOGGLE'] = {{ INDIGO_ENABLE_DARK_TOGGLE }}
 MFE_CONFIG['INDIGO_FOOTER_NAV_LINKS'] = {{ INDIGO_FOOTER_NAV_LINKS }}
+MFE_CONFIG['INDIGO_PRIMARY_COLOR'] = "{{ INDIGO_PRIMARY_COLOR }}"
 """,
         ),
         (
@@ -171,6 +172,7 @@ MFE_CONFIG['INDIGO_FOOTER_NAV_LINKS'] = {{ INDIGO_FOOTER_NAV_LINKS }}
             """
 MFE_CONFIG['INDIGO_ENABLE_DARK_TOGGLE'] = {{ INDIGO_ENABLE_DARK_TOGGLE }}
 MFE_CONFIG['INDIGO_FOOTER_NAV_LINKS'] = {{ INDIGO_FOOTER_NAV_LINKS }}
+MFE_CONFIG['INDIGO_PRIMARY_COLOR'] = "{{ INDIGO_PRIMARY_COLOR }}"
 """,
         ),
     ]
