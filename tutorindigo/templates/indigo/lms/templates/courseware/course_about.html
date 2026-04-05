@@ -106,6 +106,8 @@ from openedx.core.lib.courses import course_image_url
             wc_product_id = wc_settings.get('wc_product_id')
             wc_base_url = wc_settings.get('wc_base_url', 'https://openedx.stemquestacademy.com')
           %>
+          <!-- DEBUG WC: wc_settings=${wc_settings}, wc_price=${wc_price}, wc_product_id=${wc_product_id} -->
+          <!-- DEBUG course.other_course_settings: ${course.other_course_settings if hasattr(course, 'other_course_settings') else 'NOT FOUND'} -->
           % if wc_price and wc_product_id:
             ## Show WooCommerce product link with price
             <a href="${wc_base_url}/product/${wc_product_id}/" class="register wc-product-link" target="_blank">
