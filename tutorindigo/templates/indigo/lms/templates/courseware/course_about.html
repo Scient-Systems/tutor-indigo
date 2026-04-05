@@ -84,6 +84,7 @@ from openedx.core.lib.courses import course_image_url
         </div>
       </div>
       <div class="main-cta">
+        <!-- DEBUG USER: is_authenticated=${user.is_authenticated}, email=${user.email if user.is_authenticated else 'Anonymous'} -->
         %if user.is_authenticated and registered:
         <span class="register disabled">${_("Already Enrolled")}</span>
           %if show_courseware_link:
