@@ -13,19 +13,6 @@ from openedx.core.lib.courses import course_image_url
 %>
 
 <%inherit file="../main.html" />
-
-<!-- DEBUG: Course Object Info -->
-<%
-course_attrs = dir(course) if course else []
-has_other_course_settings = hasattr(course, 'other_course_settings')
-%>
-<!-- Course object exists: ${course is not None} -->
-<!-- Has other_course_settings: ${has_other_course_settings} -->
-<!-- Course attributes containing 'settings': ${[attr for attr in course_attrs if 'settings' in attr.lower()]} -->
-<!-- Course attributes containing 'other': ${[attr for attr in course_attrs if 'other' in attr.lower()]} -->
-<!-- Full course attributes: ${course_attrs} -->
-<!-- END DEBUG -->
-
 <%block name="headextra">
   ## OG (Open Graph) title and description added below to give social media info to display
   ## (https://developers.facebook.com/docs/opengraph/howtos/maximizing-distribution-media-content#tags)
@@ -112,7 +99,22 @@ has_other_course_settings = hasattr(course, 'other_course_settings')
             ${_("Course is full")}
           </span>
         % elif invitation_only and not can_enroll:
-          <span class="register disabled">${_("Enrollment in this course is by invitation only")}</span>
+          <%
+            # Check if WooCommerce product settings exist
+            wc_settings = course.other_course_settings.get('other_course_settings', {}) if hasattr(course, 'other_course_settings') else {}
+            wc_price = wc_settings.get('price')
+            wc_product_id = wc_settings.get('wc_product_id')
+            wc_base_url = wc_settings.get('wc_base_url', 'https://openedx.stemquestacademy.com')
+          %>
+          % if wc_price and wc_product_id:
+            ## Show WooCommerce product link with price
+            <a href="${wc_base_url}/product/${wc_product_id}/" class="register wc-product-link" target="_blank">
+              ${_("Buy Now")} - ${wc_price}
+            </a>
+          % else:
+            ## Fallback to default invitation-only message
+            <span class="register disabled">${_("Enrollment in this course is by invitation only")}</span>
+          % endif
         ## Shib courses need the enrollment button to be displayed even when can_enroll is False,
         ## because AnonymousUsers cause can_enroll for shib courses to be False, but we need them to be able to click
         ## so that they can register and become a real user that can enroll.
@@ -144,21 +146,6 @@ has_other_course_settings = hasattr(course, 'other_course_settings')
       </div>
   </header>
   </%block>
-
-  <!-- DEBUG: Temporary output to inspect course object -->
-  <div style="background-color: #f0f0f0; border: 2px solid red; padding: 20px; margin: 20px; font-family: monospace; white-space: pre-wrap; overflow-x: auto;">
-    <strong>DEBUG - Course Object:</strong>
-    Course ID: ${course.id}
-    Has other_course_settings: ${hasattr(course, 'other_course_settings')}
-    
-    other_course_settings content:
-    ${course.other_course_settings if hasattr(course, 'other_course_settings') else 'NOT FOUND'}
-    
-    Full course attributes (sample):
-    - display_name: ${course.display_name_with_default}
-    - invitation_only: ${course.invitation_only if hasattr(course, 'invitation_only') else 'NOT FOUND'}
-  </div>
-  <!-- END DEBUG -->
 
   <div class="about-content">
 
