@@ -24,6 +24,10 @@ from openedx.core.lib.courses import course_image_url
   <script type="text/javascript">
   (function() {
     $(".register").click(function(event) {
+      // Don't interfere with WooCommerce product links
+      if ($(this).hasClass('wc-product-btn')) {
+        return true;
+      }
       $("#class_enroll_form").submit();
       event.preventDefault();
     });
@@ -106,12 +110,32 @@ from openedx.core.lib.courses import course_image_url
             wc_price = wc_settings.get('price')
             wc_product_id = wc_settings.get('wc_product_id')
             wc_base_url = wc_settings.get('wc_base_url', 'https://openedx.stemquestacademy.com')
+            
+            # Build URL with email parameter if user is authenticated
+            if user.is_authenticated:
+              from urllib.parse import urlencode
+              params = urlencode({'user_email': user.email})
+              wc_url = f"{wc_base_url}/product/{wc_product_id}/?{params}"
+            else:
+              wc_url = f"{wc_base_url}/product/{wc_product_id}/"
           %>
           % if wc_price and wc_product_id:
-            ## Show WooCommerce product link with price
-            <a href="${wc_base_url}/product/${wc_product_id}/" class="register wc-product-link" target="_blank">
-              ${_("Buy Now")} - ${wc_price}
-            </a>
+            % if user.is_authenticated:
+              ## Show WooCommerce product link with price for authenticated users
+              <a href="${wc_url}" class="register wc-product-btn" target="_blank" style="pointer-events: auto;">
+                ${_("Buy Now")} - ${wc_price}
+              </a>
+            % else:
+              ## Show warning for unauthenticated users
+              <div style="margin-bottom: 10px;">
+                <div id="register_error" style="display: block; color: #d9534f; padding: 10px; background-color: #f2dede; border: 1px solid #ebccd1; border-radius: 4px;">
+                  ${_("Please sign in or create an account before purchasing this course.")}
+                </div>
+                <a href="${reverse('signin_user')}?next=${request.path | u}" class="register" style="margin-top: 10px;">
+                  ${_("Sign In / Register")}
+                </a>
+              </div>
+            % endif
           % else:
             ## Fallback to default invitation-only message
             <span class="register disabled">${_("Enrollment in this course is by invitation only")}</span>
