@@ -4,7 +4,10 @@ $content_padding_top: 24px;
 $content-padding-bottom: 10px;
 $header-height: 75px;
 $footer-height: 125.5px;
-body, h1, h2, h3, h4, h5, h6, p, label, button {
+body, p, label, button {
+  font-family: $font-family-body !important;
+}
+h1, h2, h3, h4, h5, h6 {
   font-family: $font-family-title !important;
 }
 html {
@@ -12,7 +15,7 @@ html {
 }
 body, body.view-profile {
   min-height: initial;
-  background-color: #fff;
+  background-color: $sqa-paper;
   -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -55,11 +58,11 @@ section.wiki .btn.btn-primary {
 }
 
 %btn-pl-default-base {
-  border-radius: 0;
+  border-radius: 999px;
 }
 
 .btn, .global-header .nav-links .secondary .btn {
-  border-radius: 0;
+  border-radius: 999px;
 }
 
 %t-title {
@@ -1721,3 +1724,4 @@ body.indigo-dark-theme {
 @import '../../../views/teams';
 @import '../../../views/wiki';
 @import '../../../courseware/responsive-nav';
+@import '../../../extra/night-quest';

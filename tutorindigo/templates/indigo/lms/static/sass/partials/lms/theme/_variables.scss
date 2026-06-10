@@ -1,42 +1,62 @@
 $primary: {{ INDIGO_PRIMARY_COLOR }};
-$primary-light: #F2F7F8;
+$primary-light: #EEF2FA;
+
+// ── Night Quest tokens (see NIGHT_QUEST_THEME.md, canonical: sqa-homepage/DESIGN_SYSTEM.md)
+$sqa-night-950: #070D20;
+$sqa-night-900: #0B1530;
+$sqa-night-800: #111E42;
+$sqa-night-line: rgba(255, 255, 255, 0.08);
+$sqa-paper: #FBF5EA;
+$sqa-paper-soft: #F3EAD7;
+$sqa-ink: #1D2B50;
+$sqa-ink-soft: #5C6A8C;
+$sqa-star: #EEF2FB;
+$sqa-star-dim: #8E9BBF;
+$quest-red: #EF4D4D;
+$quest-blue: #3B7BE8;
+$quest-green: #3FB868;
+$quest-yellow: #FFC83D;
+$quest-orange: #FF8A3D;
 
 // Theme fonts
-$font-family-title: 'Inter', sans-serif;
+$font-family-title: 'Fredoka', sans-serif;
+$font-family-body: 'Karla', sans-serif;
+$font-family-mono: 'JetBrains Mono', monospace;
 $serif: Crimson;
-$f-sans-serif: Crimson, 'Open Sans','Helvetica Neue', Helvetica, Arial, sans-serif;
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+$f-sans-serif: 'Karla', 'Open Sans','Helvetica Neue', Helvetica, Arial, sans-serif;
+// @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'); // disabled — replaced by Night Quest fonts
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap');
 // Initialize the Open edX Bootstrap theme
 @import 'edx-bootstrap/sass/open-edx/theme';
 
 
 // Introducing new variables
 
-$dark: #111827;
-$light-dark: #374151;
+$dark: $sqa-ink;
+$light-dark: $sqa-ink-soft;
 $big-screen: 1200px;
 
 
 
-// Introducing dark-theme variables
+// Introducing dark-theme variables — remapped to the night cosmos
 
-$primary-d: #AEC7F6;
-$primary-light-d: #292A2C;
-$gray-light: #E5E7EB;
-$gray-lighter: #c8c8c8;
+$primary-d: #9DBCF7;            // lifted quest-blue: links/CTAs on night
+$primary-light-d: #16224A;
+$gray-light: #EAE2CF;           // hairlines on paper
+$gray-lighter: #CFC8B8;
 $light-dark-d: #374151;
-$text-color-d: #F8F8F8;
-$text-color-primary: #DDDFE2;
-$border-color-d: #777792;
-$light-overlay-d: #36383B;
-$danger-d: #FFA07A;
-$success-d: #54CF5E;
-$btn-color-d: #112F6B;
-$body-bg-d: #0D0D0E;
+$text-color-d: #EEF2FB;         // star
+$text-color-primary: #C7D2EC;
+$border-color-d: #2E3D6E;
+$light-overlay-d: #111E42;      // night-800 panels
+$danger-d: #FF9C8F;
+$success-d: #5FD37A;
+$btn-color-d: #0B1530;          // text on light-blue buttons
+$body-bg-d: #0B1530;            // night-900
 
 $instructor-input-border-color: $gray-lighter;
-$light-theme-switch-bg-color: #1D386A;
-$dark-theme-switch-bg-color: #717D8A;
+$light-theme-switch-bg-color: #3B4A77;
+$dark-theme-switch-bg-color: #3B4A77;
 
 $warning-400: #ffe340;
 $warning-700: #9c4607;

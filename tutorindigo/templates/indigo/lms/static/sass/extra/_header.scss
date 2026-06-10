@@ -29,7 +29,16 @@ header.global-header {
     border: none;
     padding: 0;
     overflow: visible;
-    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.10);
+    // Night chrome: navy band with a static CSS starfield (no animation cost)
+    background-color: $sqa-night-900;
+    background-image:
+        radial-gradient(1.2px 1.2px at 22px 34px, rgba(255, 255, 255, 0.75) 50%, transparent 51%),
+        radial-gradient(1px 1px at 110px 14px, rgba(255, 255, 255, 0.5) 50%, transparent 51%),
+        radial-gradient(1.4px 1.4px at 182px 52px, rgba(255, 255, 255, 0.85) 50%, transparent 51%),
+        radial-gradient(1px 1px at 62px 64px, rgba(255, 255, 255, 0.4) 50%, transparent 51%),
+        radial-gradient(1.1px 1.1px at 250px 28px, rgba(255, 255, 255, 0.6) 50%, transparent 51%);
+    background-size: 290px 80px;
+    box-shadow: 0 1px 0 0 $sqa-night-line;
     &:after {
         content: "";
         clear: both;
@@ -80,16 +89,17 @@ header.global-header {
             margin: 0 0 0 38px;
             .nav-tab {
                 a {
+                    font-family: $font-family-title;
                     font-size: 14px;
                     font-weight: 500;
                     line-height: 22px;
                     padding: 20px 0;
-                    color: $light-dark;
+                    color: $sqa-star-dim;
                     margin: 0 16px 0 0;
                     border-bottom: 2px solid transparent;
                     &.active, &:hover {
-                        color: $dark;
-                        border-bottom: 2px solid $primary;
+                        color: $sqa-star;
+                        border-bottom: 2px solid $quest-yellow;
                     }
                 }
             }
@@ -100,16 +110,19 @@ header.global-header {
             justify-content: end;
             .toggle-user-dropdown {
                 padding: 9px 15px;
-                background: $primary-light;
-                color: $primary;
+                background: rgba(255, 255, 255, 0.1);
+                color: $sqa-star;
                 font-size: 14px;
                 font-weight: 500;
                 line-height: 20px;
-                border-radius: 6px;
+                border-radius: 999px;
                 margin: 12px 0;
+                &:hover {
+                    background: rgba(255, 255, 255, 0.16);
+                }
                 &:after {
                     margin: 4px 0 0 4px;
-                    border: 2px solid #15376D;
+                    border: 2px solid $sqa-star;
                     border-width: 2px 2px 0 0;
                     transform: rotate(135deg);
                     content: "";
@@ -167,6 +180,7 @@ header.global-header {
 
         .line {
             height: 2px;
+            background: $sqa-star;
             &:nth-child(2), &:nth-child(3) {
                 top: 6px;
             }
@@ -183,8 +197,9 @@ header.global-header {
     z-index: 9999;
     margin: 0;
     border: none;
-    border-bottom: 2px solid $primary;
+    border-bottom: 2px solid $quest-yellow;
     width: 100%;
+    background: #fff;
     .mobile-nav-link {
         a {
             font-weight: normal;
@@ -225,7 +240,7 @@ header.global-header {
     .light-theme-icon, .dark-theme-icon{
         width: 18px;
         height: 1.5rem;
-        color: $primary;
+        color: $sqa-star-dim;
         & svg {
             width: inherit;
             height: inherit;
@@ -311,26 +326,26 @@ body.indigo-dark-theme {
         width: 100%;
         .mobile-nav-link {
             a {
-                background: #454545;
+                background: $sqa-night-800;
                 color: $text-color-d;
                 &:hover, &.active {
-                    background: #323232;
+                    background: $sqa-night-950;
                     color: $text-color-d;
                 }
             }
         }
     }
     header.global-header {
-        background: $body-bg-d;
-        box-shadow: 0px 1px 2px 0px rgba(255, 255, 255, 0.8), 0px 1px 3px 0px rgba(255, 255, 255, 0.1);
+        background-color: $sqa-night-950;
+        box-shadow: 0 1px 0 0 $sqa-night-line;
         .nav-links {
             .main {
                 .nav-tab {
                     a {
-                        color: $text-color-d;
+                        color: $sqa-star-dim;
                         &.active, &:hover {
                             color: $text-color-d;
-                            border-bottom: 2px solid $text-color-d;
+                            border-bottom: 2px solid $quest-yellow;
                         }
                     }
                 }

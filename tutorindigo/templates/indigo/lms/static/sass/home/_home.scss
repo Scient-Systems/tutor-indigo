@@ -22,9 +22,30 @@ section.home {
                 line-height: 20px;
                 padding: 9px 17px;
                 font-size: 14px;
-                border-radius: 6px;
+                border-radius: 999px;
                 font-weight: 500;
                 display: block;
+            }
+            // Launch button: yellow is reserved for the primary CTA
+            .btn.register-btn {
+                background: $quest-yellow;
+                border: 1px solid $quest-yellow;
+                color: $sqa-ink;
+                font-weight: 700;
+                box-shadow: 0 4px 18px rgba(255, 200, 61, 0.35);
+                &:hover {
+                    filter: brightness(1.05);
+                }
+            }
+            .btn.sign-in-btn {
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.35);
+                color: $sqa-star;
+                &:hover {
+                    border-color: $sqa-star;
+                    background: rgba(255, 255, 255, 0.08);
+                    color: #fff;
+                }
             }
         }
     }
@@ -37,36 +58,47 @@ section.home {
             .title {
                 width: 100%;
                 float: none;
-                margin: 0;
-                padding: 30px 0 0;
                 min-height: 20px;
+                // Night hero panel: rounded navy band with a static starfield
+                background-color: $sqa-night-900;
+                background-image:
+                    radial-gradient(1.3px 1.3px at 30px 40px, rgba(255, 255, 255, 0.8) 50%, transparent 51%),
+                    radial-gradient(1px 1px at 130px 90px, rgba(255, 255, 255, 0.5) 50%, transparent 51%),
+                    radial-gradient(1.5px 1.5px at 210px 30px, rgba(255, 255, 255, 0.9) 50%, transparent 51%),
+                    radial-gradient(1px 1px at 70px 140px, rgba(255, 255, 255, 0.4) 50%, transparent 51%),
+                    radial-gradient(1.2px 1.2px at 280px 110px, rgba(255, 255, 255, 0.65) 50%, transparent 51%);
+                background-size: 330px 180px;
+                border-radius: 1.25rem;
+                margin: 20px 0 0;
+                padding: 30px 24px 34px;
                 @include media-breakpoint-up(sm) {
-                    padding: 50px 0 0;
+                    margin: 30px 0 0;
+                    padding: 48px 40px 52px;
                 }
                 .heading-group {
                     margin: 0 0 25px;
                     text-align: left;
                     padding: 0;
                     @include media-breakpoint-up(sm) {
-                        margin: 0 0 45px;
+                        margin: 0 0 35px;
                     }
                     h1 {
-                        color: #111827;
-                        font-size: 20px;
-                        font-weight: 700;
-                        line-height: 30px;
+                        color: $sqa-star;
+                        font-family: $font-family-title;
+                        font-size: 26px;
+                        font-weight: 600;
+                        line-height: 1.25;
                         margin: 0 0 8px;
                         text-align: left;
                         @include media-breakpoint-up(md) {
-                            font-size: 24px;
-                            font-weight: 700;
+                            font-size: 34px;
                             margin: 0 0 12px;
                         }
                     }
                     p {
                         font-size: 16px;
-                        line-height: 20px;
-                        color: #515661;
+                        line-height: 22px;
+                        color: $sqa-star-dim;
                         font-style: normal;
                         margin: 0;
                     }
@@ -81,30 +113,32 @@ section.home {
                                 position: static;
                                 margin: 0 0 0 16px;
                                 min-width: 90px;
-                                color: #fff;
+                                color: $sqa-ink;
                                 font-size: 16px;
-                                font-weight: 500;
+                                font-weight: 700;
                                 line-height: 26px;
                                 text-align: center;
                                 padding: 6px;
                                 height: 38px;
-                                border-radius: 6px;
-                                background: $primary;
+                                border-radius: 999px;
+                                background: $quest-yellow;
                                 font-family: $font-family-title;
                                 border: none;
+                                box-shadow: 0 4px 18px rgba(255, 200, 61, 0.35);
                                 @include media-breakpoint-up(sm) {
                                     min-width: 100px;
                                 }
                                 &:hover {
-                                    background: $primary;
-                                    opacity: .8;
+                                    background: $quest-yellow;
+                                    filter: brightness(1.05);
                                 }
                             }
                         }
                         .input-holder {
                             flex-grow: 1;
-                            border-radius: 6px;
-                            background: $primary-light;
+                            border-radius: 999px;
+                            background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid $sqa-night-line;
                             padding: 0 0 0 33px;
                             position: relative;
                             display: block;
@@ -113,6 +147,7 @@ section.home {
                                 left: 12px;
                                 font-size: 20px;
                                 top: 10px;
+                                color: $sqa-star-dim;
                             }
                             input {
                                 border: none;
@@ -124,6 +159,11 @@ section.home {
                                 font-size: 14px;
                                 line-height: 20px;
                                 padding: 9px 10px;
+                                color: $sqa-star;
+
+                                &::placeholder {
+                                    color: $sqa-star-dim;
+                                }
 
                                 &:focus,
                                 &:focus-visible {
@@ -152,15 +192,16 @@ body.indigo-dark-theme {
         .btn-holder {
             .nav-item {
                 .btn {
+                    // Same treatment as light theme — header is night in both
                     &.sign-in-btn {
-                        background: $primary-d;
-                        color: $btn-color-d;
-                        border-color: $primary-d;
+                        background: transparent;
+                        color: $sqa-star;
+                        border-color: rgba(255, 255, 255, 0.35);
                     }
                     &.register-btn {
-                        color: $text-color-d;
-                        border-color: $text-color-d;
-                        background: none;
+                        color: $sqa-ink;
+                        border-color: $quest-yellow;
+                        background: $quest-yellow;
                     }
                 }
             }
@@ -183,12 +224,12 @@ body.indigo-dark-theme {
                         .search-field-wrapper {
                             .button-holder {
                                 button {
-                                    color: $btn-color-d;
-                                    background: $primary-d;
+                                    color: $sqa-ink;
+                                    background: $quest-yellow;
                                     border: none;
                                     &:hover {
-                                        color: $btn-color-d;
-                                        background: $primary-d;
+                                        color: $sqa-ink;
+                                        background: $quest-yellow;
                                     }
                                 }
                             }

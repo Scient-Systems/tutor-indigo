@@ -23,8 +23,8 @@ config: t.Dict[str, t.Dict[str, t.Any]] = {
     # Add here your new settings
     "defaults": {
         "VERSION": __version__,
-        "WELCOME_MESSAGE": "The place for all your online learning",
-        "PRIMARY_COLOR": "#15376D",  # Indigo
+        "WELCOME_MESSAGE": "Every great mind begins with a quest",
+        "PRIMARY_COLOR": "#1D2B50",  # Night Quest ink (logo border navy)
         "ENABLE_DARK_TOGGLE": True,
         # Footer links are dictionaries with a "title" and "url"
         # To remove all links, run:
