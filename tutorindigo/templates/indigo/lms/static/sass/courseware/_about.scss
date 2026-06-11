@@ -1,463 +1,732 @@
-// Include custom about page
-.course-info.about {
-    &.container {
-        padding-top: 50px;
-        padding-bottom: 20px;
-        @include media-breakpoint-up(md) {
-            padding-top: 70px;
-            padding-bottom: 70px;
-        }
-    }
+// ── Meridian course about ───────────────────────────────────────────────────
+// Skillsphere composition: midnight chrome band (breadcrumb + course identity
+// + CTA + image card) with the white content panel pulling up out of the band.
+// Markup: templates/courseware/course_about.html (mer-* classes).
+
+.course-info.about.mer-about {
+    // neutralize .container so the band is naturally full-bleed
+    max-width: none !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    // ── Chrome band ─────────────────────────────────────────────────────────
     header.course-profile {
         overflow: visible;
-        background: none;
-        .intro-inner-wrapper {
-            background: none;
-            padding: 0 0 60px;
-            @include media-breakpoint-up(md) {
-                padding: 0 0 20px;
+        border: none;
+        background-color: $sqa-night-900;
+        background-image:
+            radial-gradient(1000px 540px at -8% -55%, rgba(47, 93, 217, 0.32), transparent 62%),
+            radial-gradient(760px 440px at 110% 160%, rgba(244, 96, 42, 0.12), transparent 65%),
+            radial-gradient(1.1px 1.1px at 30px 40px, rgba(233, 238, 250, 0.6) 50%, transparent 51%),
+            radial-gradient(0.9px 0.9px at 130px 90px, rgba(233, 238, 250, 0.4) 50%, transparent 51%),
+            radial-gradient(1.3px 1.3px at 210px 30px, rgba(233, 238, 250, 0.7) 50%, transparent 51%),
+            radial-gradient(0.9px 0.9px at 70px 140px, rgba(233, 238, 250, 0.3) 50%, transparent 51%);
+        background-repeat: no-repeat, no-repeat, repeat, repeat, repeat, repeat;
+        background-size: 100% 100%, 100% 100%, 330px 180px, 330px 180px, 330px 180px, 330px 180px;
+    }
+
+    .mer-about-wrap {
+        max-width: 1280px;
+        margin: 0 auto;
+        // bottom padding leaves the runway the white panel pulls up into
+        padding: 28px 24px 132px;
+        @include media-breakpoint-up(md) {
+            padding: 36px 32px 148px;
+        }
+    }
+
+    .mer-crumbs {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 40px;
+        font-family: $font-family-mono;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+
+        a {
+            color: $sqa-star-dim !important;
+            text-decoration: none;
+            transition: color 0.18s ease;
+
+            &:hover, &:focus {
+                color: $sqa-glow !important;
+                text-decoration: none;
             }
-            @include media-breakpoint-up(lg) {
-                padding: 36px 0 60px;
+        }
+
+        .sep {
+            color: $sqa-star-dim;
+            opacity: 0.5;
+        }
+
+        .here {
+            color: $sqa-star;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 46ch;
+        }
+    }
+
+    .mer-about-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 36px;
+        align-items: center;
+        @include media-breakpoint-up(md) {
+            grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+            gap: 56px;
+        }
+    }
+
+    .mer-eyebrow {
+        color: $sqa-star-dim;
+        margin: 0 0 16px;
+    }
+
+    .mer-about-info h1 {
+        font-family: $font-family-title;
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.12;
+        margin: 0 0 14px;
+        text-align: left;
+        color: $sqa-star !important;
+        background: linear-gradient(180deg, #F4F7FF 30%, #AFC6F2 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        @include media-breakpoint-up(md) {
+            font-size: 42px;
+        }
+    }
+
+    .mer-about-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 0;
+        margin: 0 0 28px;
+        padding: 0;
+        list-style: none;
+        font-family: $font-family-mono;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: $sqa-star-dim;
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: 0;
+
+            + li::before {
+                content: "+";
+                margin: 0 14px;
+                opacity: 0.5;
+                font-weight: 400;
             }
         }
     }
-    .intro-inner-wrapper .profile-top {
-        &:after {
-            display: block;
-            content: "";
-            clear: both;
+
+    // ── CTA row (all enrollment states) ─────────────────────────────────────
+    .main-cta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+        float: none;
+        margin: 0;
+        position: static;
+
+        a {
+            text-decoration: none !important;
         }
-        .info-profile {
-            overflow: hidden;
-            padding: 0 0 10px;
-            @include media-breakpoint-up(md) {
-                padding: 0 0 70px;
-            }
-            h1 {
-                font-size: 24px;
-                font-weight: 800;
-                margin: 0 0 8px;
-                line-height: 30px;
-                color: #111827;
-                text-align: left;
-            }
-            .org {
-                display: block;
-                color: #515661;
-                font-size: 16px;
-                line-height: 22px;
+
+        // Enroll Now — the ember launch button
+        a.register, a.add-to-cart {
+            display: inline-block;
+            padding: 13px 28px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
+            color: $sqa-ink !important;
+            font-family: $font-family-title;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 24px;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.32),
+                0 10px 28px -8px rgba(244, 96, 42, 0.45);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+
+            &:hover, &:focus {
+                color: $sqa-ink !important;
+                background: linear-gradient(180deg, #FF7A45, #E2511B);
+                transform: translateY(-2px);
+                box-shadow:
+                    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+                    0 12px 32px rgba(244, 96, 42, 0.32);
+                opacity: 1;
             }
         }
+
+        // View Course — the luminous glow action
+        a.mer-view-course {
+            display: inline-block;
+            padding: 13px 28px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #9CC4FF, #5E96F5);
+            color: $sqa-night-900 !important;
+            font-family: $font-family-title;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 24px;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.45),
+                0 10px 26px -8px rgba(111, 168, 255, 0.45);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+
+            strong {
+                font-weight: 700;
+            }
+
+            &:hover, &:focus {
+                color: $sqa-night-900 !important;
+                filter: brightness(1.06) saturate(1.05);
+                transform: translateY(-2px);
+                box-shadow:
+                    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+                    0 14px 32px -8px rgba(111, 168, 255, 0.6);
+            }
+        }
+
+        // Enrolled — success chip on night glass
+        .mer-enrolled-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 18px;
+            border-radius: 999px;
+            background: rgba(91, 211, 146, 0.12);
+            border: 1px solid rgba(91, 211, 146, 0.35);
+            color: #5BD392;
+            font-family: $font-family-body;
+            font-size: 14px;
+            font-weight: 600;
+
+            .check {
+                font-weight: 700;
+            }
+        }
+
+        // Course full / invitation only / closed — muted glass chips
+        span.register.disabled, span.register.closed {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid $sqa-night-line;
+            color: $sqa-star-dim;
+            font-family: $font-family-body;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none !important;
+
+            .fa {
+                color: $sqa-star-dim;
+            }
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+
+        #register_error {
+            display: none;
+            flex-basis: 100%;
+            margin: 4px 0 0;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: rgba(204, 61, 42, 0.16);
+            border: 1px solid rgba(255, 142, 122, 0.4);
+            color: #FF8E7A;
+            font-family: $font-family-body;
+            font-size: 14px;
+        }
+    }
+
+    // ── Course image card (lit-edge instrument) ─────────────────────────────
+    .mer-about-media {
         .media {
-            margin: 0 auto 20px;
-            padding: 0;
             display: block;
-            max-width: 400px;
+            float: none;
             width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 0;
             @include media-breakpoint-up(md) {
-                float: right;
-                width: 32%;
-                margin: 0 0 0 80px;
+                margin: 0 0 0 auto;
             }
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid $sqa-night-line;
+            border-top-color: rgba(190, 212, 255, 0.32); // lit top edge
+            border-radius: 18px;
+            background: linear-gradient(165deg, #16244A, #0D1730);
+            box-shadow:
+                inset 0 1px 0 rgba(190, 212, 255, 0.1),
+                0 24px 64px -24px rgba(0, 0, 0, 0.6);
+            padding: 10px;
+
+            &::after {
+                display: none; // retire the old inner-border hack
+            }
+
             img {
                 display: block;
                 width: 100%;
-                height: auto;
+                height: 230px;
+                object-fit: cover;
+                border-radius: 10px;
                 position: relative;
                 z-index: 1;
-                border-radius: 8px;
-                height: 180px;
-                object-fit: cover;
             }
-            .hero {
-                position: relative;
-                overflow: visible;
-                border: none;
-                &:after {
-                    position: absolute;
-                    left: 1px;
-                    top: 1px;
-                    width: calc(100% - 2px);
-                    height: calc(100% - 2px);
-                    content: "";
-                    border-radius: 8px;
-                    border: 1px solid $primary-light;
-                }
-                .play-intro{
-                    z-index: 10;
-                }
+
+            .play-intro {
+                z-index: 10;
             }
         }
     }
-    .main-cta {
+
+    // ── The breakout panel ──────────────────────────────────────────────────
+    .mer-about-body {
+        padding: 0 16px;
         @include media-breakpoint-up(md) {
-            margin: -50px 0 0;
-        }
-        span {
-          &.register {
-            &.disabled {
-              display: inline-block;
-              vertical-align: top;
-              padding: 7px 14px;
-              color: #374151;
-              border-radius: 6px;
-              background: #fff;
-              font-size: 16px;
-              line-height: 24px;
-              font-weight: 500;
-              text-decoration: none !important;
-              border: 1px solid #D1D5DB;
-              margin-right: 20px;
-              @include media-breakpoint-up(md) {
-                  padding: 12px 24px;
-              }
-
-              &:hover {
-                opacity: 1;
-              }
-            }
-          }
-        }
-
-        a {
-            display: inline-block;
-            text-decoration: none !important;
-        }
-        a.register, a strong, >span.register, a.add-to-cart {
-            display: inline-block;
-            vertical-align: top;
-            padding: 8px 15px;
-            color: #fff;
-            border-radius: 6px;
-            background: $primary;
-            font-size: 16px;
-            line-height: 24px;
-            font-weight: 500;
-            text-decoration: none !important;
-            @include media-breakpoint-up(md) {
-                padding: 13px 25px;
-            }
-            &:hover {
-                text-decoration: none;
-                opacity: .8;
-            }
-        }
-        span.closed {
-            background: $primary-light;
-            border-radius: 6px;
-            color: #9CA3AF;
-            font-size: 16px;
-            line-height: 24px;
-            padding: 16px;
-            font-weight: 500;
-            display: inline-block;
-            vertical-align: top;
+            padding: 0 24px;
         }
     }
+
     .about-content {
-        display: flex;
-        flex-flow: column-reverse;
-        flex-wrap: wrap;
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 36px;
+        max-width: 1280px;
+        margin: -96px auto 72px; // pulls up out of the chrome band
+        padding: 28px 24px;
+        background: #fff;
+        border: 1px solid rgba(16, 26, 51, 0.1);
+        border-radius: 24px;
+        box-shadow:
+            0 1px 2px rgba(16, 26, 51, 0.04),
+            0 24px 64px -16px rgba(16, 26, 51, 0.22);
+        float: none;
+
         @include media-breakpoint-up(md) {
-            display: block;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            gap: 48px;
+            padding: 44px 48px;
         }
-        &:after {
-            display: block;
-            clear: both;
-            content: "";
+
+        &::after {
+            display: none;
         }
-        .details {
-            width: 100%;
-            @include media-breakpoint-up(md) {
-                width: calc(100% - 32% - 35px);
-                margin-right: 35px;
+    }
+
+    // ── Overview typography (Studio-authored HTML) ──────────────────────────
+    .details {
+        float: none;
+        width: auto;
+        margin: 0;
+        font-family: $font-family-body;
+        font-size: 16px;
+        line-height: 1.65;
+        color: $sqa-ink-soft;
+
+        .wrap-instructor-info {
+            margin: 0 0 18px;
+
+            .instructor-info-action {
+                font-family: $font-family-mono;
+                font-size: 12px;
+                color: $quest-blue;
             }
-            @include media-breakpoint-up(lg) {
-                width: calc(100% - 32% - 57px);
-                margin-right: 57px;
+        }
+
+        h2 {
+            position: relative;
+            margin: 34px 0 16px;
+            padding: 0 0 12px;
+            font-family: $font-family-title;
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: $sqa-ink;
+
+            // meridian rule with an ember survey tick
+            &::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 64px;
+                height: 2px;
+                border-radius: 2px;
+                background: linear-gradient(90deg, $sqa-ember, rgba(244, 96, 42, 0.15));
             }
-            .wrap-instructor-info {
-                display: none;
+        }
+
+        > .inner-wrapper > *:first-child h2:first-child,
+        .inner-wrapper section:first-child h2:first-child {
+            margin-top: 0;
+        }
+
+        h3 {
+            margin: 0 0 8px;
+            font-family: $font-family-title;
+            font-size: 16px;
+            font-weight: 600;
+            color: $sqa-ink;
+        }
+
+        p {
+            margin: 0 0 14px;
+        }
+
+        ul, ol {
+            margin: 0 0 16px;
+            padding-left: 22px;
+
+            li {
+                margin: 0 0 8px;
             }
-            .about, .prerequisites, .course-staff, .faq {
-                font: 16px/20px $font-family-title;
-                color: #515661;
-                border-radius: 8px;
-                border: 1px solid $primary-light;
-                border-left: 14px solid $primary-light;
-                padding: 24px 16px 10px 16px;
-                margin: 0 0 20px;
-                .responses {
-                    float: none;
-                    width: 100%;
+        }
+
+        // retire the old left-border boxes — sections are plain editorial now
+        .about, .prerequisites, .course-staff, .faq {
+            border: none;
+            padding: 0;
+            margin: 0 0 8px;
+            border-radius: 0;
+            font-family: $font-family-body;
+            color: $sqa-ink-soft;
+
+            .responses {
+                float: none;
+                width: 100%;
+            }
+
+            .response {
+                margin: 0 0 12px;
+                &:last-child {
+                    margin: 0;
                 }
-                p {
-                    margin: 0 0 14px;
-                }
-                h2 {
-                    margin: 0 0 14px;
-                    color: #111827;
-                    font-size: 18px;
-                    line-height: 24px;
-                    font-weight: 600;
-                }
-                h3 {
-                    margin: 0 0 5px;
-                    color: #4B5563;
-                    font-size: 14px;
-                    line-height: 20px;
-                    font-weight: 500;
-                }
-                .response {
-                    margin: 0 0 12px;
-                    &:last-child {
-                        margin: 0;
+            }
+
+            .teacher {
+                margin: 0 0 28px;
+
+                .teacher-image {
+                    float: left;
+                    width: auto;
+                    height: auto;
+                    border: none;
+                    margin: 0 18px 0 0;
+                    text-align: left;
+
+                    img {
+                        width: 56px;
+                        height: 56px;
+                        object-fit: cover;
+                        border-radius: 50%;
+                        display: block;
+                        border: 2px solid $sqa-paper-soft;
                     }
                 }
-                .teacher {
-                    margin: 0 0 38px;
-                    &:last-child {
-                        margin: 0 0 14px;
-                    }
-                    &.update {
-                        position: relative;
-                        overflow: hidden;
-                        @include media-breakpoint-up(md) {
-                            &:after {
-                                position: absolute;
-                                width: 1px;
-                                height: 100%;
-                                content: "";
-                                top: 0;
-                                left: 145px;
-                                background: $primary-light;
-                            }
-                        }
-                        .teacher-info {
-                            overflow: hidden;
-                        }
-                        .teacher-image {
-                            text-align: left;
-                            border: none;
-                            height: auto;
-                            margin: 0 0 5px;
-                            float: none;
-                            width: auto;
-                            @include media-breakpoint-up(md) {
-                                margin: 0 30px 0 0;
-                                width: 130px;
-                                float: left;
-                                text-align: center;
-                            }
-                            img {
-                                width: 60px;
-                                border-radius: 50%;
-                                display: block;
-                                margin: 0 0 12px;
-                                float: none;
-                                @include media-breakpoint-up(md) {
-                                    margin: 0 auto 12px;
-                                }
-                            }
-                            h3 {
-                                margin: 0;
-                            }
-                        }
-                    }
+
+                .teacher-info {
+                    overflow: hidden;
                 }
             }
         }
     }
+
+    // ── Sidebar: the course summary instrument ──────────────────────────────
     .course-sidebar {
-        background: $primary-light;
-        padding: 24px;
-        border-radius: 8px;
-        width: 100%;
-        box-sizing: border-box;
-        margin: 0 0 25px;
-        @include media-breakpoint-up(md) {
-            width: 32%;
-            margin: 0;
-            max-width: 400px;
-            float: right;
+        float: none;
+        width: auto;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        background: none;
+
+        .course-summary {
+            background: $sqa-paper;
+            border: 1px solid rgba(16, 26, 51, 0.1);
+            border-radius: 18px;
+            padding: 24px;
         }
+
         h2 {
-            color:#111827;
-            font-size: 20px;
-            line-height: 28px;
+            margin: 0 0 6px;
+            font-family: $font-family-title;
+            font-size: 18px;
             font-weight: 700;
-            margin: 0 0 20px;
+            color: $sqa-ink;
         }
+
+        .important-dates {
+            margin: 0;
+            padding: 0;
+
+            li.important-dates-item {
+                position: relative;
+                margin: 0;
+                padding: 14px 0 14px 36px;
+                border: none;
+                border-bottom: 1px solid rgba(16, 26, 51, 0.08);
+                overflow: hidden;
+
+                &:last-child {
+                    border-bottom: none;
+                    padding-bottom: 4px;
+                }
+
+                svg, .fa {
+                    position: absolute;
+                    left: 0;
+                    top: 16px;
+                    margin: 0;
+                    font-size: 17px;
+                    line-height: 24px;
+                    color: #8E9CC0;
+                    opacity: 1;
+                }
+
+                p.important-dates-item-title {
+                    float: none;
+                    margin: 0 0 3px;
+                    font-family: $font-family-mono;
+                    font-size: 10px;
+                    font-weight: 600;
+                    letter-spacing: 0.22em;
+                    text-transform: uppercase;
+                    color: $sqa-ink-soft;
+                }
+
+                .important-dates-item-text {
+                    float: none;
+                    display: block;
+                    font-family: $font-family-body;
+                    font-size: 15px;
+                    font-weight: 600;
+                    line-height: 22px;
+                    color: $sqa-ink;
+
+                    a {
+                        color: $quest-blue;
+                    }
+                }
+
+                p.tip {
+                    float: none;
+                    margin: 6px 0 0;
+                    font-size: 12px;
+                    line-height: 1.5;
+                    color: $sqa-ink-soft;
+                }
+            }
+        }
+
+        // share row — ghost circles under the summary card
         header {
             padding: 0;
-            margin: 0;
+            margin: 18px 0 0;
             border: none;
             text-align: left;
-            &:after {
+
+            &::after {
                 display: none;
             }
+
             .social-sharing {
                 height: auto;
                 text-align: left;
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 10px;
+
                 .sharing-message {
-                    background: white;
+                    flex-basis: 100%;
+                    margin: 0 0 2px;
+                    padding: 0;
                     border: none;
-                    border-top: 4px solid $primary;
-                    color: #000;
-                    font: 10px/15px $font-family-title;
-                    padding: 10px;
+                    background: none;
+                    font-family: $font-family-mono;
+                    font-size: 10px;
+                    font-weight: 600;
+                    letter-spacing: 0.22em;
+                    text-transform: uppercase;
+                    color: $sqa-ink-soft;
                 }
+
                 .share {
-                    width: auto;
-                    height: auto;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 40px;
+                    height: 40px;
+                    margin: 0;
+                    border-radius: 50%;
+                    border: 1px solid rgba(16, 26, 51, 0.14);
+                    background: #fff;
                     opacity: 1;
-                    margin-right: 10px;
-                    vertical-align: top;
+                    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+
+                    svg {
+                        width: 17px;
+                        height: 17px;
+                    }
+
+                    &:hover, &:focus {
+                        border-color: $sqa-ink;
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 18px -8px rgba(16, 26, 51, 0.3);
+                    }
                 }
             }
         }
-        .important-dates {
-            padding: 0;
-            li {
-                position: relative;
-                padding: 0 0 20px 36px;
-                overflow: hidden;
-                border: none;
-                margin: 0;
-                svg, .fa {
-                    position: absolute;
-                    line-height: 24px;
-                    font-size: 17px;
-                    left: 0;
-                    top: 0;
-                    margin: 0;
-                    color: #9CA3AF;
-                    opacity: 1;
-                }
-                p {
-                    font-size: 14px;
-                    font-weight: 500;
-                    line-height: 24px;
-                    float: none;
-                    color: #4B5563;
-                    margin: 0 0 5px;
-                    font-family: $font-family-title;
-                    float: left;
-                    @include media-breakpoint-up(md) {
-                        float: none;
-                    }
-                    @include media-breakpoint-up(lg) {
-                        float: left;
-                    }
-                }
-                .important-dates-item-text {
-                    float: none;
-                    font-size: 12px;
-                    line-height: 24px;
-                    color: #515661;
-                    display: block;
-                    font-weight: normal;
-                    font-family: $font-family-title;
-                    float: right;
-                    @include media-breakpoint-up(md) {
-                        float: none;
-                    }
-                    @include media-breakpoint-up(lg) {
-                        float: right;
-                    }
-                }
+
+        .additional-resources,
+        .about-sidebar-html {
+            margin: 24px 0 0;
+            font-family: $font-family-body;
+            color: $sqa-ink-soft;
+
+            h1, h2 {
+                font-family: $font-family-title;
+                font-size: 16px;
+                color: $sqa-ink;
             }
         }
     }
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .course-info.about.mer-about {
+        .main-cta a.register,
+        .main-cta a.add-to-cart,
+        .main-cta a.mer-view-course,
+        .course-sidebar header .social-sharing .share {
+            transition: none;
+
+            &:hover {
+                transform: none;
+            }
+        }
+    }
+}
+
+// ── Dark variant — band is chrome (identical); panel goes sapphire ──────────
 body.indigo-dark-theme {
-    .course-info.about {
-        .intro-inner-wrapper .profile-top {
-            .info-profile {
-                h1 {
-                    color: $text-color-d;
-                }
-                .org {
-                    color: $text-color-primary;
-                }
-            }
-            .media {
-                .hero {
-                    &:after {
-                        border-color: $border-color-d;
-                    }
-                }
-            }
-        }
-        .main-cta {
-            a {
-                span {
-                    color: $text-color-d;
-                    background: none;
-                    border: 1px solid $text-color-d;
-                }
-            }
-            a.register, a strong, >span.register, a.add-to-cart {
-                color: $btn-color-d;
-                background: $primary-d;
-            }
-            span.closed {
-                background: $primary-light-d;
-            }
-        }
+    .course-info.about.mer-about {
         .about-content {
-            .details {
-                .about, .prerequisites, .course-staff, .faq {
-                    color: $text-color-d;
-                    border: 1px solid $primary-light-d;
-                    border-left: 14px solid $primary-light-d;
-                    h2 {
-                        color: $text-color-d;
-                    }
-                    h3 {
-                        color: $text-color-d;
-                    }
-                    .teacher {
-                        &.update {
-                            @include media-breakpoint-up(md) {
-                                &:after {
-                                    background: $primary-light-d;
-                                }
-                            }
-                        }
-                    }
+            background: linear-gradient(165deg, #121E3E, #0D1730);
+            border-color: $sqa-night-line;
+            border-top-color: rgba(190, 212, 255, 0.3);
+            box-shadow: 0 24px 64px -24px rgba(0, 0, 0, 0.6);
+        }
+
+        .details {
+            color: $text-color-primary;
+
+            h2, h3 {
+                color: $sqa-star;
+            }
+
+            .about, .prerequisites, .course-staff, .faq {
+                color: $text-color-primary;
+                border: none;
+
+                .teacher .teacher-image img {
+                    border-color: $border-color-d;
                 }
             }
         }
+
         .course-sidebar {
-            background: $primary-light-d;
-            h2 {
-                color: $text-color-d;
+            .course-summary {
+                background: rgba(24, 37, 74, 0.6);
+                border-color: $sqa-night-line;
             }
-            header {
-                .social-sharing {
-                    .sharing-message {
-                        background: $primary-light-d;
-                        border-top: 4px solid $primary-d;
-                        color: $text-color-d;
+
+            h2 {
+                color: $sqa-star;
+            }
+
+            .important-dates li.important-dates-item {
+                border-bottom-color: $sqa-night-line;
+
+                svg path {
+                    fill: $sqa-star-dim;
+                }
+
+                .fa {
+                    color: $sqa-star-dim;
+                }
+
+                p.important-dates-item-title {
+                    color: $sqa-star-dim;
+                }
+
+                .important-dates-item-text {
+                    color: $sqa-star;
+
+                    a {
+                        color: $primary-d;
+                    }
+                }
+
+                p.tip {
+                    color: $sqa-star-dim;
+                }
+            }
+
+            header .social-sharing {
+                .sharing-message {
+                    color: $sqa-star-dim;
+                    background: none;
+                    border: none;
+                }
+
+                .share {
+                    background: rgba(255, 255, 255, 0.05);
+                    border-color: $sqa-night-line;
+
+                    &:hover, &:focus {
+                        border-color: $sqa-star;
                     }
                 }
             }
-            .important-dates {
-                li {
-                    svg, .fa {
-                        color: $text-color-primary;
-                        path {
-                            fill: $text-color-primary;
-                        }
-                    }
-                    p {
-                        color: $text-color-primary;
-                    }
-                    .important-dates-item-text {
-                        color: $text-color-primary;
-                    }
+
+            .additional-resources,
+            .about-sidebar-html {
+                color: $text-color-primary;
+
+                h1, h2 {
+                    color: $sqa-star;
                 }
             }
         }

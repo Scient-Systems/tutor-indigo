@@ -102,11 +102,13 @@ sqa_membership_url = getattr(settings, 'SQA_PAYMENT_MFE_URL', '')
         </div>
       </header>
 
-      <div class="mer-catalog-head">
-        <p class="mer-eyebrow"><span class="mer-tick" aria-hidden="true">+</span> 01 · ${_("Course catalog")}</p>
-        <h2>${_("Start where you're curious")}</h2>
+      <div class="mer-catalog-wrap">
+        <div class="mer-catalog-head">
+          <p class="mer-eyebrow"><span class="mer-tick" aria-hidden="true">+</span> 01 · ${_("Course catalog")}</p>
+          <h2>${_("Start where you're curious")}</h2>
+        </div>
+        <%include file="${courses_list}" />
       </div>
-      <%include file="${courses_list}" />
 
     </section>
 </main>

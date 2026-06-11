@@ -4,13 +4,16 @@
 // panel with a floating satellite chip (right). Catalog header sits on frost.
 // Markup lives in templates/index.html (+ index_overlay.html for h1/p).
 
-// full-bleed hero escapes the container with vw margins; clip the stray
-// scrollbar-width overflow here (clip, not hidden — no new scroll context)
-main.mer-index {
-    overflow-x: clip;
+// The index page is uncontained at the section level — the hero band spans
+// the viewport naturally and each zone below carries its own container.
+// (vw-margin full-bleed left a white strip on wide screens; never again.)
+main.mer-index section.home {
+    max-width: none;
+    margin: 0;
+    padding: 0;
 }
 
-section.home {
+.mer-catalog-wrap {
     max-width: 1600px;
     margin: 0 auto;
     padding: 0 15px;
@@ -101,8 +104,8 @@ section.home {
 
 // ── Hero band ───────────────────────────────────────────────────────────────
 #main .home.style-logout header.mer-hero {
-    // full bleed out of the 1600px container
-    margin: 0 calc(50% - 50vw);
+    // section.home is uncontained on the index — the band is naturally full-width
+    margin: 0;
     overflow: visible;
     background-color: $sqa-night-900;
     background-image:
