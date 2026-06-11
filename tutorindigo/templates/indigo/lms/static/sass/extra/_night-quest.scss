@@ -1,2 +1,70 @@
-// Retired: Night Quest polish replaced by the Meridian design system.
-// Kept (empty) so any stale @import keeps compiling; see _meridian.scss.
+// Meridian shared polish (see MERIDIAN_THEME.md). File name is legacy
+// ("night-quest") — kept because it is the tracked, deployed path.
+// Cross-cutting touches that do not belong to a single page partial.
+
+// Selection: luminous glow wash, like the homepage
+::selection {
+    background: rgba(111, 168, 255, 0.32);
+    color: inherit;
+}
+
+// Focus rings in glow blue (visible on both frost and night)
+:focus-visible {
+    outline-color: $quest-blue;
+}
+
+// Course cards (discover grid, index listing): frost-shadow card with hover lift
+.courses-container .courses .courses-listing li .course {
+    border-radius: 18px;
+    border: 1px solid rgba(16, 26, 51, 0.1);
+    box-shadow:
+        0 1px 2px rgba(16, 26, 51, 0.04),
+        0 16px 40px -12px rgba(16, 26, 51, 0.14);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow:
+            0 1px 2px rgba(16, 26, 51, 0.04),
+            0 24px 56px -16px rgba(16, 26, 51, 0.2);
+    }
+
+    .course-info {
+        .learn-more {
+            border-radius: 12px;
+            font-weight: 700;
+            transition: background 0.18s ease;
+
+            &:hover {
+                background: $quest-blue;
+                opacity: 1;
+            }
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .courses-container .courses .courses-listing li .course {
+        transition: none;
+
+        &:hover {
+            transform: none;
+        }
+    }
+}
+
+// Generic white panels sit on frost now — soften their edges
+.course-heading-area h2,
+.course-heading-area h3 {
+    font-family: $font-family-title;
+    color: $sqa-ink;
+}
+
+// Meridian dark theme: course cards become lit-edge sapphire panels
+body.indigo-dark-theme {
+    .courses-container .courses .courses-listing li .course {
+        border-color: $sqa-night-line;
+        border-top-color: rgba(190, 212, 255, 0.28); // lit top edge
+        box-shadow: 0 24px 64px -24px rgba(0, 0, 0, 0.6);
+    }
+}
