@@ -9,6 +9,7 @@ body, p, label, button {
 }
 h1, h2, h3, h4, h5, h6 {
   font-family: $font-family-title !important;
+  letter-spacing: -0.02em;
 }
 html {
   background: transparent !important;
@@ -57,12 +58,13 @@ section.wiki .btn.btn-primary {
     outline-width: 2px;
 }
 
+// Meridian: squircle buttons (pills retired — chips may stay pill, buttons don't)
 %btn-pl-default-base {
-  border-radius: 999px;
+  border-radius: 12px;
 }
 
 .btn, .global-header .nav-links .secondary .btn {
-  border-radius: 999px;
+  border-radius: 12px;
 }
 
 %t-title {
@@ -1724,4 +1726,4 @@ body.indigo-dark-theme {
 @import '../../../views/teams';
 @import '../../../views/wiki';
 @import '../../../courseware/responsive-nav';
-@import '../../../extra/night-quest';
+@import '../../../extra/meridian';

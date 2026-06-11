@@ -1,7 +1,7 @@
-// Include custom Footer — deepest night, both themes (matches homepage footer)
+// Include custom Footer — abyss, both themes (matches homepage footer)
 .wrapper-footer {
     padding: 25px 0;
-    border-top: none;
+    border-top: 1px solid $sqa-night-line;
     background: $sqa-night-950;
     @include media-breakpoint-up(md) {
         padding: 45px 0;
@@ -47,11 +47,6 @@ footer.tutor-container {
             font-size: 12px;
             line-height: 18px;
             color: $sqa-star-dim;
-            img {
-                // Partner/openedx logos are drawn for light backgrounds
-                filter: brightness(0) invert(1);
-                opacity: 0.75;
-            }
             &:first-child {
                 padding-left: 0;
             }

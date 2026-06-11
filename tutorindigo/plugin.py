@@ -23,8 +23,8 @@ config: t.Dict[str, t.Dict[str, t.Any]] = {
     # Add here your new settings
     "defaults": {
         "VERSION": __version__,
-        "WELCOME_MESSAGE": "Every great mind begins with a quest",
-        "PRIMARY_COLOR": "#1D2B50",  # Night Quest ink (logo border navy)
+        "WELCOME_MESSAGE": "Where curious minds become builders",
+        "PRIMARY_COLOR": "#101A33",  # Meridian ink (deep navy)
         "ENABLE_DARK_TOGGLE": True,
         # Footer links are dictionaries with a "title" and "url"
         # To remove all links, run:
@@ -138,6 +138,21 @@ for mfe in all_mfes_needing_deps:
         (
             f"mfe-dockerfile-post-npm-install-{mfe}",
             mfe_deps_install,
+        )
+    )
+
+# Night Quest brand: bake the SQA brand package (fonts, night chrome header,
+# cosmic login, footer) into each styled MFE at build time. Runtime token CSS
+# comes from PARAGON_THEME_URLS below — both point at the same fork.
+NIGHT_QUEST_BRAND_REPO = "github:Scient-Systems/brand-openedx#ulmo/indigo"
+
+brand_styled_mfes = indigo_styled_mfes + ["authn", "sqa-payment"]
+
+for mfe in brand_styled_mfes:
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            f"mfe-dockerfile-post-npm-install-{mfe}",
+            f"RUN npm install '@edx/brand@{NIGHT_QUEST_BRAND_REPO}'",
         )
     )
 
@@ -306,14 +321,14 @@ paragon_theme_urls = {
     "variants": {
         "light": {
             "urls": {
-                "default": "https://raw.githubusercontent.com/edly-io/brand-openedx/refs/heads/ulmo/indigo/dist/light.min.css",
-                "brandOverride": "https://raw.githubusercontent.com/edly-io/brand-openedx/refs/heads/ulmo/indigo/dist/light.min.css",
+                "default": "https://raw.githubusercontent.com/Scient-Systems/brand-openedx/refs/heads/ulmo/indigo/dist/light.min.css",
+                "brandOverride": "https://raw.githubusercontent.com/Scient-Systems/brand-openedx/refs/heads/ulmo/indigo/dist/light.min.css",
             },
         },
         "dark": {
             "urls": {
-                "default": "https://raw.githubusercontent.com/edly-io/brand-openedx/refs/heads/ulmo/indigo/dist/dark.min.css",
-                "brandOverride": "https://raw.githubusercontent.com/edly-io/brand-openedx/refs/heads/ulmo/indigo/dist/dark.min.css",
+                "default": "https://raw.githubusercontent.com/Scient-Systems/brand-openedx/refs/heads/ulmo/indigo/dist/dark.min.css",
+                "brandOverride": "https://raw.githubusercontent.com/Scient-Systems/brand-openedx/refs/heads/ulmo/indigo/dist/dark.min.css",
             }
         },
     }

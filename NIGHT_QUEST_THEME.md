@@ -72,9 +72,30 @@ Loaded via one Google Fonts `@import` in `_variables.scss` (replaces Inter).
 `config.yml` overrides it, the new default won't apply — check with
 `tutor config printvalue INDIGO_PRIMARY_COLOR` and unset if needed.
 
-## Phase 2 pointer (MFEs)
+## Phase 2+3 (MFEs) — implemented
 
-MFE styling comes from `PARAGON_THEME_URLS` in `plugin.py` (runtime CSS, served
-through the LMS MFE-config API — **no MFE rebuild needed to iterate**). Fork
-`edly-io/brand-openedx` (`ulmo/indigo` branch), apply the Paragon column above,
-build `dist/light.min.css` + `dark.min.css`, host, and point the two URLs at it.
+Brand fork: `Scient-Systems/brand-openedx`, branch `ulmo/indigo` (clone at
+`~/brand-openedx`). Two delivery layers, both wired in `plugin.py`:
+
+1. **Build-time** (`@edx/brand@github:Scient-Systems/brand-openedx#ulmo/indigo`,
+   installed into learning/learner-dashboard/profile/account/discussions/authn/
+   sqa-payment during `tutor images build mfe`): fonts (Fredoka/Karla/JetBrains),
+   night-chrome MFE headers + starfield, night-950 footer, cosmic login hero
+   (authn), quest-yellow `.btn-brand` launch CTAs, pill buttons.
+2. **Runtime** (`PARAGON_THEME_URLS` → fork raw `dist/light|dark.min.css`,
+   served via LMS MFE-config API): color tokens — paper body, ink text, night
+   dark variant. **Token iteration = rebuild dist + push + LMS restart only;
+   no MFE image rebuild.** SCSS-layer changes need the mfe image rebuilt.
+
+The brand fork must stay **public** (browsers fetch the raw CSS directly).
+sqa-payment additionally carries its own scoped night header in `src/index.scss`
+(its pages keep their bespoke design). Legacy dark-mode iframes get night colors
+via `tutorindigo/components/AddDarkTheme.jsx`.
+
+### Deploy (VPS)
+```
+# brand: push ulmo/indigo (dist/ is committed — runtime CSS goes live on push)
+# tutor-indigo: push, then on VPS: git pull && tutor config save
+tutor images build mfe && tutor images push mfe
+kubectl -n openedx rollout restart deployment/mfe deployment/lms
+```
