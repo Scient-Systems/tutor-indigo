@@ -1,13 +1,27 @@
-// Include custom home
+// ── Meridian index page ─────────────────────────────────────────────────────
+// Hero = full-bleed midnight chrome band (identical in light + dark variants),
+// asymmetric grid: copy + search command bar (left) / membership instrument
+// panel with a floating satellite chip (right). Catalog header sits on frost.
+// Markup lives in templates/index.html (+ index_overlay.html for h1/p).
+
+// full-bleed hero escapes the container with vw margins; clip the stray
+// scrollbar-width overflow here (clip, not hidden — no new scroll context)
+main.mer-index {
+    overflow-x: clip;
+}
+
 section.home {
     max-width: 1600px;
     margin: 0 auto;
     padding: 0 15px;
 }
-// (was `background: none !important` — it nuked the midnight hero panel below
-// and left moon-colored text on a white card. Never paint this white again.)
+// (.title is a plain wrapper now — the night band lives on header.mer-hero.
+// The historic white-on-white bug was .title carrying the panel background.)
 .home>header .title {
     box-shadow: none;
+    background: none;
+    width: 100%;
+    float: none;
 }
 .home>header .outer-wrapper {
     max-width: 100%;
@@ -57,143 +71,494 @@ section.home {
         }
     }
 }
-#main .home.style-logout  {
-    header {
-        background: none;
-        overflow: visible;
-        .outer-wrapper {
-            .title {
-                width: 100%;
-                float: none;
-                min-height: 20px;
-                // Meridian hero panel: rounded midnight band — static aurora washes
-                // + faint starfield + a lit top edge (zero animation cost)
-                background-color: $sqa-night-900;
-                background-image:
-                    radial-gradient(900px 480px at -10% -60%, rgba(47, 93, 217, 0.32), transparent 62%),
-                    radial-gradient(720px 420px at 112% 160%, rgba(244, 96, 42, 0.12), transparent 65%),
-                    radial-gradient(1.1px 1.1px at 30px 40px, rgba(233, 238, 250, 0.6) 50%, transparent 51%),
-                    radial-gradient(0.9px 0.9px at 130px 90px, rgba(233, 238, 250, 0.4) 50%, transparent 51%),
-                    radial-gradient(1.3px 1.3px at 210px 30px, rgba(233, 238, 250, 0.7) 50%, transparent 51%),
-                    radial-gradient(0.9px 0.9px at 70px 140px, rgba(233, 238, 250, 0.3) 50%, transparent 51%);
-                background-repeat: no-repeat, no-repeat, repeat, repeat, repeat, repeat;
-                background-size: 100% 100%, 100% 100%, 330px 180px, 330px 180px, 330px 180px, 330px 180px;
+
+// ── Shared Meridian atoms (hero + catalog head) ─────────────────────────────
+.mer-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-family: $font-family-mono;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+
+    .mer-tick {
+        font-weight: 400;
+        opacity: 0.7;
+    }
+
+    // meridian rule trailing off the label
+    &::after {
+        content: "";
+        flex: 0 1 120px;
+        height: 1px;
+        background: linear-gradient(90deg, currentColor, transparent);
+        opacity: 0.35;
+    }
+}
+
+// ── Hero band ───────────────────────────────────────────────────────────────
+#main .home.style-logout header.mer-hero {
+    // full bleed out of the 1600px container
+    margin: 0 calc(50% - 50vw);
+    overflow: visible;
+    background-color: $sqa-night-900;
+    background-image:
+        // aurora veil: glow wash top-left, teal whisper center, ember glint bottom-right
+        radial-gradient(1000px 540px at -8% -55%, rgba(47, 93, 217, 0.34), transparent 62%),
+        radial-gradient(720px 460px at 58% 130%, rgba(25, 182, 201, 0.10), transparent 64%),
+        radial-gradient(760px 440px at 110% 150%, rgba(244, 96, 42, 0.13), transparent 65%),
+        // static starfield (texture, not theme)
+        radial-gradient(1.1px 1.1px at 30px 40px, rgba(233, 238, 250, 0.6) 50%, transparent 51%),
+        radial-gradient(0.9px 0.9px at 130px 90px, rgba(233, 238, 250, 0.4) 50%, transparent 51%),
+        radial-gradient(1.3px 1.3px at 210px 30px, rgba(233, 238, 250, 0.7) 50%, transparent 51%),
+        radial-gradient(0.9px 0.9px at 70px 140px, rgba(233, 238, 250, 0.3) 50%, transparent 51%);
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, repeat, repeat;
+    background-size: 100% 100%, 100% 100%, 100% 100%, 330px 180px, 330px 180px, 330px 180px, 330px 180px;
+    position: relative;
+
+    // iridescent hairline threshold into the frost catalog below
+    &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(111, 168, 255, 0.55) 38%,
+            rgba(255, 138, 87, 0.5) 62%,
+            transparent 100%);
+    }
+
+    .outer-wrapper {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 44px 24px 52px;
+        @include media-breakpoint-up(sm) {
+            padding: 64px 32px 72px;
+        }
+        @include media-breakpoint-up(lg) {
+            padding: 84px 40px 92px;
+        }
+    }
+
+    .mer-hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 44px;
+        align-items: center;
+        @include media-breakpoint-up(lg) {
+            grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+            gap: 64px;
+        }
+    }
+
+    .mer-eyebrow {
+        color: $sqa-star-dim;
+        margin: 0 0 18px;
+    }
+
+    .heading-group {
+        margin: 0 0 26px;
+        text-align: left;
+        padding: 0;
+
+        h1 {
+            font-family: $font-family-title;
+            font-size: 38px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.08;
+            margin: 0 0 14px;
+            text-align: left;
+            // moonlight gradient ink (overrides stock color rules)
+            color: $sqa-star !important;
+            background: linear-gradient(180deg, #F4F7FF 30%, #AFC6F2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            @include media-breakpoint-up(md) {
+                font-size: 52px;
+            }
+            @include media-breakpoint-up(xl) {
+                font-size: 60px;
+            }
+        }
+        p {
+            font-size: 17px;
+            line-height: 1.6;
+            color: $sqa-star-dim !important;
+            font-style: normal;
+            margin: 0;
+            max-width: 52ch;
+        }
+    }
+
+    // search as a command bar
+    .course-search {
+        padding: 0;
+        max-width: 560px;
+
+        .search-field-wrapper {
+            display: flex;
+            gap: 12px;
+
+            .input-holder {
+                flex-grow: 1;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.07);
                 border: 1px solid $sqa-night-line;
-                border-top-color: rgba(190, 212, 255, 0.28);
-                box-shadow: 0 32px 80px -28px rgba(10, 18, 38, 0.55);
-                border-radius: 24px;
-                margin: 20px 0 0;
-                padding: 30px 24px 34px;
-                @include media-breakpoint-up(sm) {
-                    margin: 30px 0 0;
-                    padding: 48px 40px 52px;
+                border-top-color: rgba(190, 212, 255, 0.26); // lit edge
+                box-shadow: inset 0 1px 0 rgba(190, 212, 255, 0.08);
+                padding: 0 0 0 40px;
+                position: relative;
+                display: block;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+                svg {
+                    position: absolute;
+                    left: 14px;
+                    top: 50%;
+                    transform: translateY(-50%);
                 }
-                .heading-group {
-                    margin: 0 0 25px;
-                    text-align: left;
-                    padding: 0;
-                    @include media-breakpoint-up(sm) {
-                        margin: 0 0 35px;
+
+                &:focus-within {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-color: rgba(111, 168, 255, 0.6);
+                    box-shadow: 0 0 0 3px rgba(111, 168, 255, 0.25);
+                }
+
+                input {
+                    border: none;
+                    box-shadow: none;
+                    height: 50px;
+                    width: 100%;
+                    background: none;
+                    outline: none;
+                    font-size: 15px;
+                    line-height: 20px;
+                    padding: 12px 12px 12px 0;
+                    color: $sqa-star;
+
+                    &::placeholder {
+                        font-family: $font-family-mono;
+                        font-size: 13px;
+                        color: $sqa-star-dim;
                     }
-                    h1 {
-                        color: $sqa-star !important;
-                        font-family: $font-family-title;
-                        font-size: 30px;
-                        font-weight: 700;
-                        letter-spacing: -0.02em;
-                        line-height: 1.15;
-                        margin: 0 0 8px;
-                        text-align: left;
-                        @include media-breakpoint-up(md) {
-                            font-size: 42px;
-                            margin: 0 0 12px;
-                        }
-                    }
-                    p {
-                        font-size: 16px;
-                        line-height: 22px;
-                        color: $sqa-star-dim !important;
-                        font-style: normal;
-                        margin: 0;
+
+                    &:focus,
+                    &:focus-visible {
+                        outline: none; // focus ring carried by .input-holder
                     }
                 }
-                .course-search {
-                    padding: 0;
-                    .search-field-wrapper {
-                      display: flex;
+            }
 
-                      .button-holder {
-                            button {
-                                position: static;
-                                margin: 0 0 0 16px;
-                                min-width: 90px;
-                                color: $sqa-ink;
-                                font-size: 16px;
-                                font-weight: 700;
-                                line-height: 26px;
-                                text-align: center;
-                                padding: 6px;
-                                height: 38px;
-                                border-radius: 12px;
-                                background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
-                                font-family: $font-family-title;
-                                border: none;
-                                box-shadow:
-                                    inset 0 1px 0 rgba(255, 255, 255, 0.32),
-                                    0 10px 28px -8px rgba(244, 96, 42, 0.45);
-                                @include media-breakpoint-up(sm) {
-                                    min-width: 100px;
-                                }
-                                &:hover {
-                                    background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
-                                    filter: brightness(1.04) saturate(1.08);
-                                }
-                            }
-                        }
-                        .input-holder {
-                            flex-grow: 1;
-                            border-radius: 12px;
-                            background: rgba(255, 255, 255, 0.1);
-                            border: 1px solid $sqa-night-line;
-                            padding: 0 0 0 33px;
-                            position: relative;
-                            display: block;
-                            svg {
-                                position: absolute;
-                                left: 12px;
-                                font-size: 20px;
-                                top: 10px;
-                                color: $sqa-star-dim;
-                            }
-                            input {
-                                border: none;
-                                box-shadow: none;
-                                height: 38px;
-                                width: 100%;
-                                background: none;
-                                outline: none;
-                                font-size: 14px;
-                                line-height: 20px;
-                                padding: 9px 10px;
-                                color: $sqa-star;
+            .button-holder {
+                button {
+                    position: static;
+                    margin: 0;
+                    min-width: 104px;
+                    height: 50px;
+                    padding: 6px 18px;
+                    color: $sqa-ink;
+                    font-size: 16px;
+                    font-weight: 700;
+                    text-align: center;
+                    border-radius: 12px;
+                    background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
+                    font-family: $font-family-title;
+                    border: none;
+                    box-shadow:
+                        inset 0 1px 0 rgba(255, 255, 255, 0.32),
+                        0 10px 28px -8px rgba(244, 96, 42, 0.45);
+                    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 
-                                &::placeholder {
-                                    color: $sqa-star-dim;
-                                }
-
-                                &:focus,
-                                &:focus-visible {
-                                    outline: revert;
-                                    outline-width: 2px;
-                                }
-                            }
-                        }
+                    &:hover {
+                        background: linear-gradient(180deg, #FF7A45, #E2511B);
+                        transform: translateY(-2px);
+                        box-shadow:
+                            inset 0 1px 0 rgba(255, 255, 255, 0.32),
+                            0 12px 32px rgba(244, 96, 42, 0.32);
                     }
                 }
             }
         }
     }
+
+    .mer-hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 0;
+        margin: 22px 0 0;
+        padding: 0;
+        list-style: none;
+        font-family: $font-family-mono;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: $sqa-star-dim;
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: 0;
+
+            // survey-tick separators between items
+            + li::before {
+                content: "+";
+                margin: 0 14px;
+                opacity: 0.5;
+                font-weight: 400;
+            }
+        }
+    }
+
+    // ── Instrument panel ────────────────────────────────────────────────────
+    .mer-hero-panel {
+        position: relative;
+        max-width: 420px;
+        width: 100%;
+        margin: 0 auto;
+        @include media-breakpoint-up(lg) {
+            margin: 0 0 0 auto;
+        }
+    }
+
+    .mer-instrument {
+        background: linear-gradient(165deg, #16244A 0%, #0D1730 100%);
+        border: 1px solid $sqa-night-line;
+        border-top-color: rgba(190, 212, 255, 0.32); // lit top edge
+        border-radius: 24px;
+        padding: 26px 26px 24px;
+        box-shadow:
+            inset 0 1px 0 rgba(190, 212, 255, 0.1),
+            0 24px 64px -24px rgba(0, 0, 0, 0.6);
+    }
+
+    .mer-microlabel {
+        margin: 0 0 18px;
+        font-family: $font-family-mono;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: $sqa-star-dim;
+    }
+
+    .mer-tiers {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        .mer-tier {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 9px 0;
+
+            .t-name {
+                font-family: $font-family-body;
+                font-size: 15px;
+                font-weight: 600;
+                color: $sqa-star;
+            }
+
+            .t-gauge {
+                display: flex;
+                gap: 5px;
+
+                i {
+                    width: 26px;
+                    height: 5px;
+                    border-radius: 999px;
+                    background: rgba(151, 170, 215, 0.16);
+                }
+            }
+        }
+
+        // lit segments per level — each tier in its own instrument color
+        .mer-tier-free .t-gauge i:nth-child(-n+1) {
+            background: #8E9CC0;
+        }
+        .mer-tier-basic .t-gauge i:nth-child(-n+2) {
+            background: #6FA8FF;
+            box-shadow: 0 0 10px rgba(111, 168, 255, 0.45);
+        }
+        .mer-tier-premium .t-gauge i:nth-child(-n+3) {
+            background: linear-gradient(90deg, #FFB08A, #FF8A57);
+            box-shadow: 0 0 10px rgba(255, 138, 87, 0.4);
+        }
+        .mer-tier-enterprise .t-gauge i:nth-child(-n+4) {
+            background: #5BD392;
+            box-shadow: 0 0 10px rgba(91, 211, 146, 0.35);
+        }
+    }
+
+    .mer-divider {
+        height: 1px;
+        margin: 16px 0;
+        background: linear-gradient(90deg, $sqa-night-line, transparent);
+    }
+
+    .mer-live {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 10px;
+        font-family: $font-family-body;
+        font-size: 14px;
+        color: $sqa-star-dim;
+
+        .mer-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: $sqa-ember-soft;
+            box-shadow: 0 0 0 0 rgba(255, 138, 87, 0.5);
+            animation: mer-pulse 2.4s ease-out infinite;
+        }
+    }
+
+    .mer-count {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin: 0 0 14px;
+        font-family: $font-family-body;
+        font-size: 14px;
+        color: $sqa-star-dim;
+
+        .num {
+            font-family: $font-family-title;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 1;
+            color: $sqa-star;
+        }
+    }
+
+    .mer-glowlink {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: $font-family-body;
+        font-size: 14px;
+        font-weight: 700;
+        color: $sqa-glow !important;
+        text-decoration: none;
+        transition: gap 0.18s ease, filter 0.18s ease;
+
+        &:hover, &:focus {
+            color: $sqa-glow !important;
+            filter: brightness(1.15);
+            gap: 10px;
+            text-decoration: none;
+        }
+    }
+
+    // floating glass satellite chip overlapping the panel
+    .mer-sat {
+        position: absolute;
+        top: -16px;
+        right: -10px;
+        padding: 9px 14px;
+        border-radius: 12px;
+        background: rgba(16, 27, 56, 0.78);
+        backdrop-filter: blur(12px);
+        border: 1px solid $sqa-night-line;
+        border-top-color: rgba(190, 212, 255, 0.32);
+        box-shadow: 0 14px 36px -12px rgba(0, 0, 0, 0.55);
+        font-family: $font-family-mono;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: $sqa-star-dim;
+        animation: mer-float 10s ease-in-out infinite;
+
+        strong {
+            color: #FFB08A;
+            font-weight: 600;
+        }
+
+        @media (max-width: 575px) {
+            display: none;
+        }
+    }
 }
+
+// ── Catalog header (frost zone, below the band) ─────────────────────────────
+.mer-catalog-head {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 52px 9px 0; // aligns with .courses-listing gutters
+
+    .mer-eyebrow {
+        color: $sqa-ink-soft;
+        margin: 0 0 10px;
+    }
+
+    h2 {
+        font-family: $font-family-title;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: $sqa-ink;
+        margin: 0;
+        @include media-breakpoint-up(md) {
+            font-size: 32px;
+        }
+    }
+}
+
+// ── Motion: one orchestrated hero load (CSS-only) ───────────────────────────
+@keyframes mer-rise {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+        filter: blur(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes mer-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 138, 87, 0.5); }
+    70% { box-shadow: 0 0 0 9px rgba(255, 138, 87, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 138, 87, 0); }
+}
+
+@keyframes mer-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.mer-rise {
+    animation: mer-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    &.mer-d1 { animation-delay: 0.09s; }
+    &.mer-d2 { animation-delay: 0.18s; }
+    &.mer-d3 { animation-delay: 0.27s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mer-rise,
+    #main .home.style-logout header.mer-hero .mer-sat,
+    #main .home.style-logout header.mer-hero .mer-live .mer-dot {
+        animation: none;
+    }
+}
+
+// ── Dark variant ────────────────────────────────────────────────────────────
+// The hero band is night chrome in BOTH variants — no overrides needed there.
 body.indigo-dark-theme {
     h1 {
         color: $text-color-d;
@@ -223,47 +588,12 @@ body.indigo-dark-theme {
             }
         }
     }
-    #main .home.style-logout  {
-        header {
-            background: none;
-            .outer-wrapper {
-                .title {
-                    .heading-group {
-                        h1 {
-                            color: $text-color-d;
-                        }
-                        p {
-                            color: $text-color-primary;
-                        }
-                    }
-                    .course-search {
-                        .search-field-wrapper {
-                            .button-holder {
-                                button {
-                                    color: $sqa-ink;
-                                    background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
-                                    border: none;
-                                    &:hover {
-                                        color: $sqa-ink;
-                                        background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
-                                    }
-                                }
-                            }
-                            .input-holder {
-                                background: $primary-light-d;
-                                svg {
-                                    path {
-                                        fill: $text-color-primary;
-                                    }
-                                }
-                                input {
-                                    color: $text-color-d;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+    .mer-catalog-head {
+        .mer-eyebrow {
+            color: $sqa-star-dim;
+        }
+        h2 {
+            color: $sqa-star;
         }
     }
 }

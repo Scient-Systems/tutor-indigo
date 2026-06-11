@@ -2,51 +2,110 @@
 <%inherit file="main.html" />
 <%namespace name='static' file='static_content.html'/>
 <%!
+from django.conf import settings
 from django.utils.translation import gettext as _
 from django.urls import reverse
 
 from openedx.core.djangolib.markup import HTML, Text
 %>
+<%
+sqa_membership_url = getattr(settings, 'SQA_PAYMENT_MFE_URL', '')
+%>
 
-<main id="main" aria-label="Content" tabindex="-1">
+<main id="main" class="mer-index" aria-label="Content" tabindex="-1">
     <section class="home style-logout">
-      <header>
+      ## Meridian hero — full-bleed midnight band. Composition: copy + search
+      ## command bar (left) / membership instrument panel (right). The band
+      ## lives on <header>; .title is now a plain layout wrapper (safe — the
+      ## old white-on-white bug was .title carrying the panel and getting
+      ## background:none'd; the night background now sits one level up).
+      <header class="mer-hero">
         <div class="outer-wrapper">
           <div class="title">
-            <div class="heading-group">
-              % if homepage_overlay_html:
-                ${homepage_overlay_html | n, decode.utf8}
-              % else:
-                <%include file="index_overlay.html" />
-              % endif
-            </div>
-            % if settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
-              <div class="course-search">
-                <form method="get" action="/courses">
-                  <!-- UPDATE IN INDIGO2.1 - Change the structure for search bar  -->
-                  <div class="search-field-wrapper">
-                    <label class="input-holder"><span class="sr">${_("Search for a course")}</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8 4C5.79086 4 4 5.79086 4 8C4 10.2091 5.79086 12 8 12C10.2091 12 12 10.2091 12 8C12 5.79086 10.2091 4 8 4ZM2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8C14 9.29583 13.5892 10.4957 12.8907 11.4765L17.7071 16.2929C18.0976 16.6834 18.0976 17.3166 17.7071 17.7071C17.3166 18.0976 16.6834 18.0976 16.2929 17.7071L11.4765 12.8907C10.4957 13.5892 9.29583 14 8 14C4.68629 14 2 11.3137 2 8Z" fill="#9CA3AF"></path>
-                        </svg>
-                      <input class="search-input" name="search_query" type="text" placeholder="${_("Search for a course")}"></input>
-                    </label>
-                    <div class="button-holder">
-                      <button class="search-button" type="submit">
-                        ${_("Search")}
-                      </button>
-                    </div>
+            <div class="mer-hero-grid">
+
+              <div class="mer-hero-copy">
+                <p class="mer-eyebrow mer-rise"><span class="mer-tick" aria-hidden="true">+</span> ${settings.PLATFORM_NAME}</p>
+
+                <div class="heading-group mer-rise mer-d1">
+                  % if homepage_overlay_html:
+                    ${homepage_overlay_html | n, decode.utf8}
+                  % else:
+                    <%include file="index_overlay.html" />
+                  % endif
+                </div>
+
+                % if settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
+                  <div class="course-search mer-rise mer-d2">
+                    <form method="get" action="/courses">
+                      <div class="search-field-wrapper">
+                        <label class="input-holder"><span class="sr">${_("Search for a course")}</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M8 4C5.79086 4 4 5.79086 4 8C4 10.2091 5.79086 12 8 12C10.2091 12 12 10.2091 12 8C12 5.79086 10.2091 4 8 4ZM2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8C14 9.29583 13.5892 10.4957 12.8907 11.4765L17.7071 16.2929C18.0976 16.6834 18.0976 17.3166 17.7071 17.7071C17.3166 18.0976 16.6834 18.0976 16.2929 17.7071L11.4765 12.8907C10.4957 13.5892 9.29583 14 8 14C4.68629 14 2 11.3137 2 8Z" fill="#8E9CC0"></path>
+                          </svg>
+                          <input class="search-input" name="search_query" type="text" placeholder="${_("Search the catalog — robotics, Python, circuits…")}"></input>
+                        </label>
+                        <div class="button-holder">
+                          <button class="search-button" type="submit">
+                            ${_("Search")}
+                          </button>
+                        </div>
+                      </div>
+                    </form>
                   </div>
-                </form>
+                % endif
+
+                <ul class="mer-hero-meta mer-rise mer-d3" aria-label="${_("Program highlights")}">
+                  <li>${_("Live cohorts")}</li>
+                  <li>${_("Expert mentors")}</li>
+                  <li>${_("Certificates")}</li>
+                </ul>
               </div>
-            % endif
 
+              <aside class="mer-hero-panel mer-rise mer-d2" aria-label="${_("Membership levels")}">
+                <div class="mer-instrument">
+                  <p class="mer-microlabel">${_("Membership · Access levels")}</p>
+                  <ol class="mer-tiers">
+                    <li class="mer-tier mer-tier-free">
+                      <span class="t-name">${_("Free")}</span>
+                      <span class="t-gauge" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                    </li>
+                    <li class="mer-tier mer-tier-basic">
+                      <span class="t-name">${_("Basic")}</span>
+                      <span class="t-gauge" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                    </li>
+                    <li class="mer-tier mer-tier-premium">
+                      <span class="t-name">${_("Premium")}</span>
+                      <span class="t-gauge" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                    </li>
+                    <li class="mer-tier mer-tier-enterprise">
+                      <span class="t-name">${_("Enterprise")}</span>
+                      <span class="t-gauge" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                    </li>
+                  </ol>
+                  <div class="mer-divider" aria-hidden="true"></div>
+                  <p class="mer-live"><span class="mer-dot" aria-hidden="true"></span> ${_("Live cohorts with expert mentors")}</p>
+                  % if courses is not UNDEFINED and courses:
+                    <p class="mer-count"><span class="num">${len(courses)}</span> ${_("courses open for enrollment")}</p>
+                  % endif
+                  % if sqa_membership_url:
+                    <a class="mer-glowlink" href="${sqa_membership_url}">${_("View membership plans")} <span aria-hidden="true">&rarr;</span></a>
+                  % endif
+                </div>
+                <div class="mer-sat" aria-hidden="true">${_("Membership")} · <strong>${_("Premium")}</strong></div>
+              </aside>
+
+            </div>
+
+            <%include file="index_promo_video.html" />
           </div>
-
-          <%include file="index_promo_video.html" />
         </div>
-
       </header>
+
+      <div class="mer-catalog-head">
+        <p class="mer-eyebrow"><span class="mer-tick" aria-hidden="true">+</span> 01 · ${_("Course catalog")}</p>
+        <h2>${_("Start where you're curious")}</h2>
+      </div>
       <%include file="${courses_list}" />
 
     </section>
