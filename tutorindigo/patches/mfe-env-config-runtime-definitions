@@ -2,3 +2,6 @@
 {{- patch("MobileViewHeader.jsx") }}
 {{- patch("ThemedLogo.jsx") }}
 {{- patch("ToggleThemeButton.jsx") }}
+{{- patch("SqaDashboardHero.jsx") }}
+{{- patch("SqaMembershipInstrument.jsx") }}
+{{- patch("SqaDashboardEmptyState.jsx") }}

@@ -317,6 +317,71 @@ PLUGIN_SLOTS.add_items(
     ]
 )
 
+# Flight-deck redesign widgets for the learner dashboard (Meridian/Grove).
+# Components live in tutorindigo/components/Sqa*.jsx and are styled by
+# brand-openedx paragon/_dashboard.scss.
+PLUGIN_SLOTS.add_items(
+    [
+        (
+            # Hero band (greeting + resume runway + stat strip) above the
+            # stock course list. priority 1 renders it before default_contents
+            # (priority 50); CSS `order` lifts it above the panel heading.
+            "learner-dashboard",
+            "org.openedx.frontend.learner_dashboard.course_list.v1",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_dashboard_hero',
+                type: DIRECT_PLUGIN,
+                priority: 1,
+                RenderWidget: SqaDashboardHero,
+            },
+        },
+        """,
+        ),
+        (
+            # Replace the stock "Looking for a challenge?" sidebar card with
+            # the membership instrument rail (live sqa plugin API data).
+            "learner-dashboard",
+            "org.openedx.frontend.learner_dashboard.widget_sidebar.v1",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_membership_instrument',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaMembershipInstrument,
+            },
+        },
+        """,
+        ),
+        (
+            # Designed empty state (ghost wordmark + catalog CTA).
+            "learner-dashboard",
+            "org.openedx.frontend.learner_dashboard.no_courses_view.v1",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_dashboard_empty',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaDashboardEmptyState,
+            },
+        },
+        """,
+        ),
+    ]
+)
+
 paragon_theme_urls = {
     "variants": {
         "light": {
