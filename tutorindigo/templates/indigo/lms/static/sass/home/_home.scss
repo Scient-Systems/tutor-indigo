@@ -25,6 +25,8 @@ main.mer-index section.home {
     background: none;
     width: 100%;
     float: none;
+    padding: 0;   // stock padding pushed the whole hero grid off-center
+    margin: 0;
 }
 .home>header .outer-wrapper {
     max-width: 100%;
@@ -47,18 +49,18 @@ main.mer-index section.home {
             }
             // Ember launch button: the single accent, reserved for the primary CTA
             .btn.register-btn {
-                background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
+                background: $sqa-ember;
                 border: none;
                 color: $sqa-ink;
                 font-weight: 700;
                 box-shadow:
                     inset 0 1px 0 rgba(255, 255, 255, 0.32),
-                    0 10px 28px -8px rgba(244, 96, 42, 0.45);
+                    0 10px 28px -8px rgba(140, 161, 44, 0.45);
                 &:hover {
                     filter: brightness(1.04) saturate(1.08);
                     box-shadow:
                         inset 0 1px 0 rgba(255, 255, 255, 0.32),
-                        0 14px 32px -8px rgba(244, 96, 42, 0.55);
+                        0 14px 32px -8px rgba(140, 161, 44, 0.55);
                 }
             }
             .btn.sign-in-btn {
@@ -112,7 +114,7 @@ main.mer-index section.home {
         // aurora veil: glow wash top-left, teal whisper center, ember glint bottom-right
         radial-gradient(1000px 540px at -8% -55%, rgba(47, 93, 217, 0.34), transparent 62%),
         radial-gradient(720px 460px at 58% 130%, rgba(25, 182, 201, 0.10), transparent 64%),
-        radial-gradient(760px 440px at 110% 150%, rgba(244, 96, 42, 0.13), transparent 65%),
+        radial-gradient(760px 440px at 110% 150%, rgba(169, 188, 63, 0.11), transparent 65%),
         // static starfield (texture, not theme)
         radial-gradient(1.1px 1.1px at 30px 40px, rgba(233, 238, 250, 0.6) 50%, transparent 51%),
         radial-gradient(0.9px 0.9px at 130px 90px, rgba(233, 238, 250, 0.4) 50%, transparent 51%),
@@ -132,8 +134,8 @@ main.mer-index section.home {
         height: 1px;
         background: linear-gradient(90deg,
             transparent 0%,
-            rgba(111, 168, 255, 0.55) 38%,
-            rgba(255, 138, 87, 0.5) 62%,
+            rgba(159, 139, 255, 0.55) 38%,
+            rgba(169, 188, 63, 0.55) 62%,
             transparent 100%);
     }
 
@@ -179,11 +181,7 @@ main.mer-index section.home {
             margin: 0 0 14px;
             text-align: left;
             // moonlight gradient ink (overrides stock color rules)
-            color: $sqa-star !important;
-            background: linear-gradient(180deg, #F4F7FF 30%, #AFC6F2 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #EEF2FF !important;
             @include media-breakpoint-up(md) {
                 font-size: 52px;
             }
@@ -231,8 +229,8 @@ main.mer-index section.home {
 
                 &:focus-within {
                     background: rgba(255, 255, 255, 0.1);
-                    border-color: rgba(111, 168, 255, 0.6);
-                    box-shadow: 0 0 0 3px rgba(111, 168, 255, 0.25);
+                    border-color: rgba(159, 139, 255, 0.6);
+                    box-shadow: 0 0 0 3px rgba(159, 139, 255, 0.28);
                 }
 
                 input {
@@ -272,20 +270,20 @@ main.mer-index section.home {
                     font-weight: 700;
                     text-align: center;
                     border-radius: 12px;
-                    background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
+                    background: $sqa-ember;
                     font-family: $font-family-title;
                     border: none;
                     box-shadow:
                         inset 0 1px 0 rgba(255, 255, 255, 0.32),
-                        0 10px 28px -8px rgba(244, 96, 42, 0.45);
+                        0 10px 28px -8px rgba(140, 161, 44, 0.45);
                     transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 
                     &:hover {
-                        background: linear-gradient(180deg, #FF7A45, #E2511B);
+                        background: $sqa-ember-soft;
                         transform: translateY(-2px);
                         box-shadow:
                             inset 0 1px 0 rgba(255, 255, 255, 0.32),
-                            0 12px 32px rgba(244, 96, 42, 0.32);
+                            0 12px 32px rgba(140, 161, 44, 0.38);
                     }
                 }
             }
@@ -391,16 +389,16 @@ main.mer-index section.home {
             background: #8E9CC0;
         }
         .mer-tier-basic .t-gauge i:nth-child(-n+2) {
-            background: #6FA8FF;
-            box-shadow: 0 0 10px rgba(111, 168, 255, 0.45);
+            background: #9F8BFF;
+            box-shadow: 0 0 10px rgba(159, 139, 255, 0.45);
         }
         .mer-tier-premium .t-gauge i:nth-child(-n+3) {
-            background: linear-gradient(90deg, #FFB08A, #FF8A57);
-            box-shadow: 0 0 10px rgba(255, 138, 87, 0.4);
+            background: #A9BC3F;
+            box-shadow: 0 0 10px rgba(169, 188, 63, 0.45);
         }
         .mer-tier-enterprise .t-gauge i:nth-child(-n+4) {
-            background: #5BD392;
-            box-shadow: 0 0 10px rgba(91, 211, 146, 0.35);
+            background: #45C48A;
+            box-shadow: 0 0 10px rgba(69, 196, 138, 0.35);
         }
     }
 
@@ -424,7 +422,7 @@ main.mer-index section.home {
             height: 8px;
             border-radius: 50%;
             background: $sqa-ember-soft;
-            box-shadow: 0 0 0 0 rgba(255, 138, 87, 0.5);
+            box-shadow: 0 0 0 0 rgba(169, 188, 63, 0.55);
             animation: mer-pulse 2.4s ease-out infinite;
         }
     }
@@ -486,7 +484,7 @@ main.mer-index section.home {
         animation: mer-float 10s ease-in-out infinite;
 
         strong {
-            color: #FFB08A;
+            color: #C6D465;
             font-weight: 600;
         }
 
@@ -535,9 +533,9 @@ main.mer-index section.home {
 }
 
 @keyframes mer-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(255, 138, 87, 0.5); }
-    70% { box-shadow: 0 0 0 9px rgba(255, 138, 87, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 138, 87, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(169, 188, 63, 0.55); }
+    70% { box-shadow: 0 0 0 9px rgba(169, 188, 63, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(169, 188, 63, 0); }
 }
 
 @keyframes mer-float {
@@ -585,7 +583,7 @@ body.indigo-dark-theme {
                     &.register-btn {
                         color: $sqa-ink;
                         border: none;
-                        background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
+                        background: $sqa-ember;
                     }
                 }
             }

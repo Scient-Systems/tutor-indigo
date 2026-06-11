@@ -1,5 +1,5 @@
 $primary: {{ INDIGO_PRIMARY_COLOR }};
-$primary-light: #E8EFFC;
+$primary-light: #ECEFDA;        // olive tint wash
 
 // ── Meridian tokens (see MERIDIAN_THEME.md, canonical: sqa-homepage/DESIGN_SYSTEM.md)
 // Legacy $sqa-* names are kept so every partial keeps compiling; values are Meridian.
@@ -8,22 +8,25 @@ $sqa-night-950: #060B1A;                      // abyss
 $sqa-night-900: #0A1226;                      // midnight
 $sqa-night-800: #101B38;                      // sapphire
 $sqa-night-line: rgba(151, 170, 215, 0.14);   // hairline on night
-// Day (frost — cool blue-white app surfaces, never cream)
-$sqa-paper: #F1F5FA;                          // frost (body)
-$sqa-paper-soft: #E7EDF6;                     // frost-2
+// Day (sage frost — olive-cast light app surfaces)
+$sqa-paper: #F2F4EA;                          // sage frost (body)
+$sqa-paper-soft: #E8ECDB;                     // sage frost-2
 $sqa-ink: #101A33;
 $sqa-ink-soft: #4F5E7E;
 $sqa-star: #E9EEFA;                           // moon (text on night)
 $sqa-star-dim: #8E9CC0;                       // moon-dim
 
-// Accent: a single copper-ember reserved for primary CTAs (always with ink text),
-// plus the luminous glow blue for links/active states on night chrome.
-$sqa-ember: #F4602A;
-$sqa-ember-soft: #FF8A57;
-$sqa-glow: #6FA8FF;
+// Grove palette (boss directive 2026-06: complementary scheme built from OLIVE
+// as the base color; flat fills, no gradient buttons/text). Olive (~80deg on the
+// wheel) is the brand/CTA color; its complement viola (~260deg) carries links and
+// actives on night chrome; midnight navy chrome sits on the complementary side
+// of the wheel so it stays. Legacy $sqa-ember/$sqa-glow names kept as aliases.
+$sqa-ember: #8CA12C;                          // olive-500: primary CTA fill (ink text)
+$sqa-ember-soft: #A9BC3F;                     // olive-400: hover lift
+$sqa-glow: #9F8BFF;                           // viola-400: links/actives on night
 // Legacy quest aliases → Meridian semantics
 $quest-red: #CC3D2A;
-$quest-blue: #2B5FD0;
+$quest-blue: #5A41C4;            // viola-600: links on day (complement of olive)
 $quest-green: #1F9D5B;
 $quest-yellow: $sqa-ember;                    // primary CTA fill (ink text on it)
 $quest-orange: $sqa-ember-soft;
