@@ -12,14 +12,21 @@ const SqaStatRing = ({ pct }) => {
     return () => window.cancelAnimationFrame(raf);
   }, []);
   const clamped = Math.max(0, Math.min(1, pct));
+  // Inline width/fill/stroke are a fallback so the ring degrades to a small
+  // outline (not a giant black disc) if the brand stylesheet ever fails to
+  // load; the .sqa-ring CSS rules override these presentation attributes.
   return (
-    <svg className="sqa-ring" viewBox="0 0 56 56" aria-hidden="true">
-      <circle className="sqa-ring-track" cx="28" cy="28" r="24" />
+    <svg className="sqa-ring" viewBox="0 0 56 56" width="56" height="56" aria-hidden="true">
+      <circle className="sqa-ring-track" cx="28" cy="28" r="24" fill="none" stroke="rgba(16,26,51,0.08)" strokeWidth="4" />
       <circle
         className="sqa-ring-fill"
         cx="28"
         cy="28"
         r="24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="4"
+        strokeLinecap="round"
         strokeDasharray={C}
         strokeDashoffset={drawn ? C * (1 - clamped) : C}
         transform="rotate(-90 28 28)"

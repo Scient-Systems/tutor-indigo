@@ -383,6 +383,19 @@ PLUGIN_SLOTS.add_items(
 )
 
 paragon_theme_urls = {
+    # Serve the brand core (structural overrides: header/footer/dashboard/…)
+    # at RUNTIME like the variants below. Without this, core styles only reach
+    # MFEs via the @edx/brand package npm-installed at image build — where the
+    # Docker layer caches the branch ref and silently ships stale CSS until a
+    # --no-cache rebuild. With it: push brand repo + restart lms = CSS live.
+    # $paragonVersion is substituted by frontend-platform with each MFE's own
+    # installed paragon version.
+    "core": {
+        "urls": {
+            "default": "https://cdn.jsdelivr.net/npm/@openedx/paragon@$paragonVersion/dist/core.min.css",
+            "brandOverride": "https://raw.githubusercontent.com/Scient-Systems/brand-openedx/refs/heads/ulmo/indigo/dist/core.min.css",
+        },
+    },
     "variants": {
         "light": {
             "urls": {
