@@ -78,11 +78,14 @@ const SqaMembershipInstrument = () => {
           {tiers.map((t) => {
             const isCurrent = memberLoaded && currentTier && t.slug === currentTier.slug;
             const unlocked = memberLoaded && currentTier && t.rank <= currentTier.rank;
+            // hoisted style object — inline double-brace JSX styles break
+            // Tutor's Jinja rendering of this file (see SqaDashboardHero.jsx)
+            const tierStyle = { '--sqa-tier-c': tierColors[t.slug] || '#8E9CC0' };
             return (
               <li
                 key={t.slug}
                 className={`sqa-tier${isCurrent ? ' sqa-tier--current' : ''}${unlocked ? ' sqa-tier--unlocked' : ''}`}
-                style={{ '--sqa-tier-c': tierColors[t.slug] || '#8E9CC0' }}
+                style={tierStyle}
               >
                 <span className="sqa-tier-dot" aria-hidden="true" />
                 <span className="sqa-tier-name">{t.display_name}</span>

@@ -86,6 +86,14 @@ const SqaDashboardHero = () => {
     { key: 'certificates', hue: 'jade', label: 'Certificates', value: stats.certificates },
   ] : [];
 
+  // NOTE: this file is rendered by Tutor's Jinja templating before it lands in
+  // env.config.jsx — inline JSX style objects (double braces) are forbidden
+  // because "{" + "{" opens a Jinja print statement. Hoist style objects.
+  const resumeArtStyle = resume && resume.target.course && resume.target.course.bannerImgSrc
+    ? { backgroundImage: `url(${abs(resume.target.course.bannerImgSrc)})` }
+    : null;
+  const statDelayStyle = (i) => ({ animationDelay: `${0.12 + i * 0.09}s` });
+
   return (
     <section id="sqa-dash-hero" aria-label="Dashboard overview">
       <p className="sqa-eyebrow">FLIGHT DECK · {dateLabel}</p>
@@ -98,10 +106,10 @@ const SqaDashboardHero = () => {
           className="sqa-resume"
           href={abs(resume.mode === 'resume' ? resume.target.courseRun.resumeUrl : resume.target.courseRun.homeUrl)}
         >
-          {resume.target.course && resume.target.course.bannerImgSrc ? (
+          {resumeArtStyle ? (
             <span
               className="sqa-resume-art"
-              style={{ backgroundImage: `url(${abs(resume.target.course.bannerImgSrc)})` }}
+              style={resumeArtStyle}
               aria-hidden="true"
             />
           ) : null}
@@ -130,7 +138,7 @@ const SqaDashboardHero = () => {
             <div
               key={s.key}
               className={`sqa-stat sqa-stat--${s.hue}`}
-              style={{ animationDelay: `${0.12 + i * 0.09}s` }}
+              style={statDelayStyle(i)}
             >
               <span className="sqa-stat-dial">
                 <SqaStatRing pct={stats.total ? s.value / stats.total : 0} />
