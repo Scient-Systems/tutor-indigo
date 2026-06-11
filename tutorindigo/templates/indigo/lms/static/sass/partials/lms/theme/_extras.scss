@@ -121,7 +121,7 @@ header.global-header .nav-links .secondary .dropdown-user-menu {
 /////////////////// Home page
 .home header {
   box-shadow: none;
-  background-color: #fff;
+  background-color: transparent; // the hero panel paints itself (home/_home.scss)
 }
 
 .home > header .title {

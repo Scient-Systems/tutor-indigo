@@ -4,8 +4,10 @@ section.home {
     margin: 0 auto;
     padding: 0 15px;
 }
+// (was `background: none !important` — it nuked the midnight hero panel below
+// and left moon-colored text on a white card. Never paint this white again.)
 .home>header .title {
-    background: none !important;
+    box-shadow: none;
 }
 .home>header .outer-wrapper {
     max-width: 100%;
@@ -94,22 +96,23 @@ section.home {
                         margin: 0 0 35px;
                     }
                     h1 {
-                        color: $sqa-star;
+                        color: $sqa-star !important;
                         font-family: $font-family-title;
-                        font-size: 26px;
-                        font-weight: 600;
-                        line-height: 1.25;
+                        font-size: 30px;
+                        font-weight: 700;
+                        letter-spacing: -0.02em;
+                        line-height: 1.15;
                         margin: 0 0 8px;
                         text-align: left;
                         @include media-breakpoint-up(md) {
-                            font-size: 34px;
+                            font-size: 42px;
                             margin: 0 0 12px;
                         }
                     }
                     p {
                         font-size: 16px;
                         line-height: 22px;
-                        color: $sqa-star-dim;
+                        color: $sqa-star-dim !important;
                         font-style: normal;
                         margin: 0;
                     }

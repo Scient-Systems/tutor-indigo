@@ -17,13 +17,14 @@
         line-height: 20px;
     }
     h2 {
-        color: #111827;
-        font-size: 20px;
+        color: $sqa-ink;
+        font-size: 24px;
         font-weight: 700;
-        line-height: 30px;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
         margin: 0 0 8px;
         @include media-breakpoint-up(md) {
-            font-size: 24px;
+            font-size: 32px;
             font-weight: 700;
             margin: 0 0 12px;
         }
@@ -75,7 +76,7 @@
                     margin: 0;
                     border: none;
                     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 3px rgba(0, 0, 0, 0.10);
-                    border-radius: 8px;
+                    border-radius: 18px;
                     overflow: hidden;
                     background: #fff;
                     .course-image {
@@ -144,10 +145,11 @@
                             }
                         }
                         .course-date {
-                            border-top: 1px solid #ECF0F4;
+                            border-top: 1px solid rgba(16, 26, 51, 0.08);
+                            background: $sqa-paper-soft;
                             padding: 10px 20px;
                             margin: 0 -20px;
-                            color: #515661;
+                            color: $sqa-ink-soft;
                             font-size: 14px;
                             line-height: 20px;
                             svg {
@@ -215,31 +217,35 @@
                         position: static;
                         margin: 0 0 0 16px;
                         min-width: 90px;
-                        color: #fff;
+                        color: $sqa-ink;
                         font-size: 16px;
-                        font-weight: 500;
+                        font-weight: 700;
                         line-height: 26px;
                         text-align: center;
                         padding: 6px;
                         height: 38px;
-                        border-radius: 6px;
-                        background: $primary;
+                        border-radius: 12px;
+                        background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
                         font-family: $font-family-title;
                         border: none;
-                        box-shadow: none !important;
+                        box-shadow:
+                            inset 0 1px 0 rgba(255, 255, 255, 0.32),
+                            0 8px 22px -8px rgba(244, 96, 42, 0.45) !important;
                         @include media-breakpoint-up(sm) {
                             min-width: 100px;
                         }
                         &:hover {
-                            background: $primary;
-                            opacity: .8;
+                            background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
+                            opacity: 1;
+                            filter: brightness(1.04) saturate(1.08);
                         }
                     }
                 }
                 .input-holder {
                     flex-grow: 1;
-                    border-radius: 6px;
-                    background: $primary-light;
+                    border-radius: 12px;
+                    background: #fff;
+                    border: 1px solid rgba(16, 26, 51, 0.12);
                     padding: 0 0 0 33px;
                     position: relative;
                     svg {
@@ -296,15 +302,16 @@
     }
     >a {
         display: block;
-        background-color: $primary-light;
+        background-color: #fff;
+        border: 1px solid rgba(16, 26, 51, 0.12);
         text-decoration: none !important;
         font-size: 14px;
         line-height: 20px;
         margin: 0 16px 0 0;
         font-weight: 500;
         padding: 8px 10px;
-        border-radius: 6px;
-        color: #4B5563;
+        border-radius: 12px;
+        color: $sqa-ink-soft;
         &:hover {
             text-decoration: none;
             color: #4B5563;
@@ -428,16 +435,17 @@ body.indigo-dark-theme {
                 .wrapper-search-input {
                     .button-holder {
                         button {
-                            background: $primary-d;
-                            color: $btn-color-d;
+                            background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
+                            color: $sqa-ink;
                             &:hover {
-                                background: $primary-d;
-                                color: $btn-color-d;
+                                background: linear-gradient(180deg, $sqa-ember-soft, $sqa-ember);
+                                color: $sqa-ink;
                             }
                         }
                     }
                     .input-holder {
-                        background: $primary-light-d;
+                        background: rgba(16, 27, 56, 0.7);
+                        border-color: $sqa-night-line;
                         svg {
                            path {
                                 color: $text-color-d;
@@ -456,7 +464,8 @@ body.indigo-dark-theme {
         .filter-block {
 
             >a {
-                background-color: $primary-light-d;
+                background-color: rgba(16, 27, 56, 0.7);
+                border-color: $sqa-night-line;
                 color: $text-color-d;
                 &:hover {
                     color: $text-color-d;
