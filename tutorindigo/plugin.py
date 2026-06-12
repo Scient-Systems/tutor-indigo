@@ -382,31 +382,42 @@ PLUGIN_SLOTS.add_items(
     ]
 )
 
+# Runtime brand CSS — core (structural overrides: header/footer/dashboard/…)
+# AND the light/dark token variants.
+#
+# DO NOT use raw.githubusercontent.com here: it serves text/plain with
+# X-Content-Type-Options: nosniff, so browsers silently refuse to apply it as
+# a stylesheet (the old raw URLs below never worked — pages were riding on the
+# stale CSS baked into the mfe image). jsDelivr serves proper text/css.
+#
+# BRAND_DIST_REF must be a COMMIT SHA: jsDelivr cannot parse the branch name
+# (the slash in "ulmo/indigo" breaks its @ref syntax), and a SHA makes caching
+# deterministic. ON EVERY brand-openedx PUSH: bump this SHA, then
+# `tutor config save && tutor k8s start && kubectl -n openedx rollout restart
+# deployment/lms` (no mfe image rebuild needed for CSS).
+BRAND_DIST_REF = "bc3cfe968a6901f0729b18112893b96e3151d6a7"
+BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
+
 paragon_theme_urls = {
-    # Serve the brand core (structural overrides: header/footer/dashboard/…)
-    # at RUNTIME like the variants below. Without this, core styles only reach
-    # MFEs via the @edx/brand package npm-installed at image build — where the
-    # Docker layer caches the branch ref and silently ships stale CSS until a
-    # --no-cache rebuild. With it: push brand repo + restart lms = CSS live.
     # $paragonVersion is substituted by frontend-platform with each MFE's own
     # installed paragon version.
     "core": {
         "urls": {
             "default": "https://cdn.jsdelivr.net/npm/@openedx/paragon@$paragonVersion/dist/core.min.css",
-            "brandOverride": "https://raw.githubusercontent.com/Scient-Systems/brand-openedx/refs/heads/ulmo/indigo/dist/core.min.css",
+            "brandOverride": f"{BRAND_DIST_CDN}/dist/core.min.css",
         },
     },
     "variants": {
         "light": {
             "urls": {
-                "default": "https://raw.githubusercontent.com/Scient-Systems/brand-openedx/refs/heads/ulmo/indigo/dist/light.min.css",
-                "brandOverride": "https://raw.githubusercontent.com/Scient-Systems/brand-openedx/refs/heads/ulmo/indigo/dist/light.min.css",
+                "default": f"{BRAND_DIST_CDN}/dist/light.min.css",
+                "brandOverride": f"{BRAND_DIST_CDN}/dist/light.min.css",
             },
         },
         "dark": {
             "urls": {
-                "default": "https://raw.githubusercontent.com/Scient-Systems/brand-openedx/refs/heads/ulmo/indigo/dist/dark.min.css",
-                "brandOverride": "https://raw.githubusercontent.com/Scient-Systems/brand-openedx/refs/heads/ulmo/indigo/dist/dark.min.css",
+                "default": f"{BRAND_DIST_CDN}/dist/dark.min.css",
+                "brandOverride": f"{BRAND_DIST_CDN}/dist/dark.min.css",
             }
         },
     }
