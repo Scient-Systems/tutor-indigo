@@ -361,6 +361,21 @@ PLUGIN_SLOTS.add_items(
         """,
         ),
         (
+            # AI token card in the profile form (below Education field).
+            "profile",
+            "org.openedx.frontend.profile.additional_profile_fields.v1",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_token_card',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaTokenCard,
+            },
+        },
+        """,
+        ),
+        (
             # Designed empty state (ghost wordmark + catalog CTA).
             "learner-dashboard",
             "org.openedx.frontend.learner_dashboard.no_courses_view.v1",
