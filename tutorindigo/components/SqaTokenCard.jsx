@@ -3,7 +3,7 @@
 // Fetches the user's active SQA proxy tokens from the plugin API and shows
 // status + a link to the full tokens management page (/sqa/tokens/).
 // No inline double-brace style objects — Jinja renders this file before it
-// lands in env.config.jsx, so {{ }} would be interpreted as template tags.
+// lands in env.config.jsx, so a doubled curly brace is read as a template tag.
 
 const SqaTokenCard = () => {
   const config = getConfig();
