@@ -33,7 +33,7 @@ const SqaTokenCard = () => {
     <div className="pgn__form-group mb-4">
       <p className="pgn__form-label font-weight-bold mb-2">AI Access Token</p>
       {activeToken ? (
-        <div className="d-flex align-items-center flex-wrap" style={null}>
+        <div className="d-flex align-items-center flex-wrap">
           <span className="badge badge-success mr-2">Active</span>
           <code className="mr-3 text-monospace small">{activeToken.token_prefix}…</code>
           <a className="btn btn-outline-primary btn-sm" href={tokenPageUrl}>

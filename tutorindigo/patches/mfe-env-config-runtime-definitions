@@ -5,3 +5,4 @@
 {{- patch("SqaDashboardHero.jsx") }}
 {{- patch("SqaMembershipInstrument.jsx") }}
 {{- patch("SqaDashboardEmptyState.jsx") }}
+{{- patch("SqaTokenCard.jsx") }}
