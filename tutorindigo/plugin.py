@@ -410,7 +410,7 @@ PLUGIN_SLOTS.add_items(
 # deterministic. ON EVERY brand-openedx PUSH: bump this SHA, then
 # `tutor config save && tutor k8s start && kubectl -n openedx rollout restart
 # deployment/lms` (no mfe image rebuild needed for CSS).
-BRAND_DIST_REF = "bc3cfe968a6901f0729b18112893b96e3151d6a7"
+BRAND_DIST_REF = "27fc260658ca1e64120ec7c34ba52061aa81843b"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 
 paragon_theme_urls = {

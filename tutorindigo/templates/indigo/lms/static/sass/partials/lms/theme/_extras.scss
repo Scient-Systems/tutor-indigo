@@ -404,12 +404,12 @@ body.view-student-notes {
     background: $primary-light !important;
     select {
       background: none;
-      color: dark;
+      color: $dark;
     }
   }
   .member-list {
     .label {
-      color: dark !important;
+      color: $dark !important;
       background: $primary-light !important;
     }
   }
@@ -912,6 +912,14 @@ body div.book-wrapper{
 }
 
 body.indigo-dark-theme {
+  // Without this, browsers paint native widgets (select popups, checkboxes,
+  // date pickers, scrollbars) with light UA colors while option text inherits
+  // the near-white theme color — white-on-white dropdowns.
+  color-scheme: dark;
+  select option, select optgroup {
+    background-color: $body-bg-d;
+    color: $text-color-d;
+  }
   input:-webkit-autofill,
   input:-webkit-autofill:hover, 
   input:-webkit-autofill:focus, 
