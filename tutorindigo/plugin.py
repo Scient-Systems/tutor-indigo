@@ -257,6 +257,24 @@ for mfe in indigo_styled_mfes:
         """,
             )
         )
+        # Theme toggle inside the mobile hamburger panel (the desktop toggle
+        # lives in desktop_secondary_menu_slot, which never renders on mobile).
+        PLUGIN_SLOTS.add_item(
+            (
+                mfe,
+                "org.openedx.frontend.layout.header_mobile_main_menu.v1",
+                """
+                {
+                    op: PLUGIN_OPERATIONS.Insert,
+                    widget: {
+                        id: 'theme_switch_button_mobile',
+                        type: DIRECT_PLUGIN,
+                        RenderWidget: ToggleThemeButton,
+                    },
+                },
+                """,
+            )
+        )
         # DISABLED (2026-07-14): upstream indigo hid the default mobile header
         # ("it only shows logo") and replaced it with the logo-only
         # MobileViewHeader — but on header v6.6.0 (Ulmo) the default
@@ -418,7 +436,7 @@ PLUGIN_SLOTS.add_items(
 # deterministic. ON EVERY brand-openedx PUSH: bump this SHA, then
 # `tutor config save && tutor k8s start && kubectl -n openedx rollout restart
 # deployment/lms` (no mfe image rebuild needed for CSS).
-BRAND_DIST_REF = "046af7422f8f4fd3e58dbf01a81fdc3e19b77072"
+BRAND_DIST_REF = "f00a33e952f364d40a366f94d85d6445f7790513"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 
 paragon_theme_urls = {
