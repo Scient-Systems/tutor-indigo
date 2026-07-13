@@ -257,35 +257,43 @@ for mfe in indigo_styled_mfes:
         """,
             )
         )
-        PLUGIN_SLOTS.add_items(
-            [
-                (
-                    # Hide the default mobile header as it only shows logo
-                    mfe,
-                    "mobile_header_slot",
-                    """
-                {
-                    op: PLUGIN_OPERATIONS.Hide,
-                    widgetId: 'default_contents',
-                }
-                """,
-                ),
-                (
-                    mfe,
-                    "mobile_header_slot",
-                    """
-                {
-                    op: PLUGIN_OPERATIONS.Insert,
-                    widget: {
-                        id: 'theme_switch_button',
-                        type: DIRECT_PLUGIN,
-                        RenderWidget: MobileViewHeader,
-                    },
-                },
-                """,
-                ),
-            ]
-        )
+        # DISABLED (2026-07-14): upstream indigo hid the default mobile header
+        # ("it only shows logo") and replaced it with the logo-only
+        # MobileViewHeader — but on header v6.6.0 (Ulmo) the default
+        # mobile_header_slot contents are the full MobileHeader: hamburger
+        # opening MobileMainMenuSlot (Courses / Discover New on the learner
+        # dashboard, + the sqa Membership link injected by the sqa_payment
+        # tutor plugin), logo_slot (already ThemedLogo), and the mobile user
+        # menu. Hiding it left phones with no navigation at all.
+        # PLUGIN_SLOTS.add_items(
+        #     [
+        #         (
+        #             # Hide the default mobile header as it only shows logo
+        #             mfe,
+        #             "mobile_header_slot",
+        #             """
+        #         {
+        #             op: PLUGIN_OPERATIONS.Hide,
+        #             widgetId: 'default_contents',
+        #         }
+        #         """,
+        #         ),
+        #         (
+        #             mfe,
+        #             "mobile_header_slot",
+        #             """
+        #         {
+        #             op: PLUGIN_OPERATIONS.Insert,
+        #             widget: {
+        #                 id: 'theme_switch_button',
+        #                 type: DIRECT_PLUGIN,
+        #                 RenderWidget: MobileViewHeader,
+        #             },
+        #         },
+        #         """,
+        #         ),
+        #     ]
+        # )
 
 PLUGIN_SLOTS.add_items(
     [
