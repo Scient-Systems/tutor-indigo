@@ -438,8 +438,28 @@ paragon_theme_urls = {
     }
 }
 
+# Studio/authoring is deliberately unthemed (tool-dense surface — runbook 10).
+# The global PARAGON_THEME_URLS above would otherwise let frontend-platform's
+# built-in theming inside the authoring MFE honor the shared
+# 'selected-paragon-theme-variant' localStorage key (same origin as the learner
+# MFEs) and load dark.min.css, which has no authoring coverage: card titles and
+# outline headings stay light-theme navy ink → unreadable on the dark
+# background. Serving authoring a light-only variant set pins it to light
+# regardless of the LMS toggle.
+authoring_theme_urls = {
+    "core": paragon_theme_urls["core"],
+    "defaults": {"light": "light"},
+    "variants": {"light": paragon_theme_urls["variants"]["light"]},
+}
+
 fstring = f"""
 MFE_CONFIG["PARAGON_THEME_URLS"] = {json.dumps(paragon_theme_urls)}
+
+try:
+    MFE_CONFIG_OVERRIDES
+except NameError:
+    MFE_CONFIG_OVERRIDES = {{}}
+MFE_CONFIG_OVERRIDES.setdefault("authoring", {{}})["PARAGON_THEME_URLS"] = {json.dumps(authoring_theme_urls)}
 """
 
 hooks.Filters.ENV_PATCHES.add_item(("mfe-lms-common-settings", fstring))
