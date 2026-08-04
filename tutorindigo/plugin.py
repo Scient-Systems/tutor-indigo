@@ -79,7 +79,7 @@ with open(
 
 
 # Override openedx & mfe docker image names
-@hooks.Filters.CONFIG_DEFAULTS.add(priority=hooks.priorities.LOW)
+@hooks.Filters.CONFIG_DEFAULTS.add(priority=hooks.priorities.LOW)  # type: ignore[untyped-decorator]
 def _override_openedx_docker_image(
     items: list[tuple[str, t.Any]],
 ) -> list[tuple[str, t.Any]]:
@@ -307,7 +307,7 @@ for mfe in indigo_styled_mfes:
         #             op: PLUGIN_OPERATIONS.Insert,
         #             widget: {
         #                 id: 'theme_switch_button',
-        #                 type: DIRECT_PLUGIN,
+        #                 "type": DIRECT_PLUGIN,
         #                 RenderWidget: MobileViewHeader,
         #             },
         #         },
@@ -444,7 +444,7 @@ BRAND_DIST_CDN = (
     f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 )
 
-paragon_theme_urls = {
+paragon_theme_urls: dict[str, t.Any] = {
     # $paragonVersion is substituted by frontend-platform with each MFE's own
     # installed paragon version.
     "core": {
