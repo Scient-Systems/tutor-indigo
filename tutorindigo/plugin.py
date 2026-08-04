@@ -79,7 +79,7 @@ with open(
 
 
 # Override openedx & mfe docker image names
-@hooks.Filters.CONFIG_DEFAULTS.add(priority=hooks.priorities.LOW)  # type: ignore[untyped-decorator]
+@hooks.Filters.CONFIG_DEFAULTS.add(priority=hooks.priorities.LOW)
 def _override_openedx_docker_image(
     items: list[tuple[str, t.Any]],
 ) -> list[tuple[str, t.Any]]:
