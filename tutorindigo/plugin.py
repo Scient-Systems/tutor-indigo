@@ -131,7 +131,10 @@ all_mfes_needing_deps = [
     "communications",
 ]
 
-mfe_deps_install = "RUN npm install react-responsive @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core"
+mfe_deps_install = (
+    "RUN npm install react-responsive @fortawesome/react-fontawesome "
+    "@fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core"
+)
 
 for mfe in all_mfes_needing_deps:
     hooks.Filters.ENV_PATCHES.add_item(
@@ -437,7 +440,9 @@ PLUGIN_SLOTS.add_items(
 # `tutor config save && tutor k8s start && kubectl -n openedx rollout restart
 # deployment/lms` (no mfe image rebuild needed for CSS).
 BRAND_DIST_REF = "67efa71a96ffe526dfa489fdcfbbcb12b8ea8155"
-BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
+BRAND_DIST_CDN = (
+    f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
+)
 
 paragon_theme_urls = {
     # $paragonVersion is substituted by frontend-platform with each MFE's own
@@ -461,7 +466,7 @@ paragon_theme_urls = {
                 "brandOverride": f"{BRAND_DIST_CDN}/dist/dark.min.css",
             }
         },
-    }
+    },
 }
 
 # Studio/authoring is deliberately unthemed (tool-dense surface — runbook 10).
@@ -478,14 +483,17 @@ authoring_theme_urls = {
     "variants": {"light": paragon_theme_urls["variants"]["light"]},
 }
 
+theme_json = json.dumps(paragon_theme_urls)
+auth_json = json.dumps(authoring_theme_urls)
+
 fstring = f"""
-MFE_CONFIG["PARAGON_THEME_URLS"] = {json.dumps(paragon_theme_urls)}
+MFE_CONFIG["PARAGON_THEME_URLS"] = {theme_json}
 
 try:
     MFE_CONFIG_OVERRIDES
 except NameError:
     MFE_CONFIG_OVERRIDES = {{}}
-MFE_CONFIG_OVERRIDES.setdefault("authoring", {{}})["PARAGON_THEME_URLS"] = {json.dumps(authoring_theme_urls)}
+MFE_CONFIG_OVERRIDES.setdefault("authoring", {{}})["PARAGON_THEME_URLS"] = {auth_json}
 """
 
 hooks.Filters.ENV_PATCHES.add_item(("mfe-lms-common-settings", fstring))
