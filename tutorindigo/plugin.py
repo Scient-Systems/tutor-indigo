@@ -462,10 +462,9 @@ PLUGIN_SLOTS.add_items(
 # `tutor config save && tutor k8s start && kubectl -n <ns> rollout restart
 # deployment/lms` (no mfe image rebuild needed for CSS).
 #
-# TODO(verawood): still the ULMO dist SHA. Bump to the first
-# Scient-Systems/brand-openedx verawood/indigo commit once that branch exists,
-# and keep it in step with versions.yml (also_pinned_at: BRAND_DIST_REF).
-BRAND_DIST_REF = "67efa71a96ffe526dfa489fdcfbbcb12b8ea8155"
+# This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
+# step with versions.yml (also_pinned_at: BRAND_DIST_REF).
+BRAND_DIST_REF = "51a9c3f93eca529914d27a4371793eaff98251a2"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 
 paragon_theme_urls = {
