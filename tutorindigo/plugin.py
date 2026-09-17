@@ -23,8 +23,8 @@ config: t.Dict[str, t.Dict[str, t.Any]] = {
     # Add here your new settings
     "defaults": {
         "VERSION": __version__,
-        "WELCOME_MESSAGE": "The place for all your online learning",
-        "PRIMARY_COLOR": "#15376D",  # Indigo
+        "WELCOME_MESSAGE": "Where curious minds become builders",
+        "PRIMARY_COLOR": "#101A33",  # Meridian ink (deep navy)
         "ENABLE_DARK_TOGGLE": True,
         # Footer links are dictionaries with a "title" and "url"
         # To remove all links, run:
@@ -117,24 +117,48 @@ indigo_styled_mfes = [
     "authoring",
 ]
 
-for mfe in indigo_styled_mfes:
-    hooks.Filters.ENV_PATCHES.add_items(
-        [
-            (
-                f"mfe-dockerfile-post-npm-install-{mfe}",
-                """
-RUN npm install '@edx/brand@github:@edly-io/brand-openedx#indigo-3.0.0'
-""",  # noqa: E501
-            ),
-        ]
+# All MFEs that need header component dependencies. Our header/footer and the
+# Sqa* dashboard widgets import these, so they must exist in every MFE we style.
+all_mfes_needing_deps = [
+    "learning",
+    "learner-dashboard",
+    "profile",
+    "account",
+    "discussions",
+    "authn",
+    "admin-console",
+    "authoring",
+    "gradebook",
+    "ora-grading",
+    "communications",
+]
+
+mfe_deps_install = "RUN npm install react-responsive @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core"
+
+for mfe in all_mfes_needing_deps:
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            f"mfe-dockerfile-post-npm-install-{mfe}",
+            mfe_deps_install,
+        )
     )
 
-hooks.Filters.ENV_PATCHES.add_item(
-    (
-        "mfe-dockerfile-post-npm-install-authn",
-        "RUN npm install '@edx/brand@github:@edly-io/brand-openedx#indigo-3.0.0'",
+# Night Quest brand: bake the SQA brand package (fonts, night chrome header,
+# cosmic login, footer) into each styled MFE at build time. Runtime token CSS
+# comes from PARAGON_THEME_URLS below - both point at the same fork.
+# NOTE: this is the VERAWOOD branch of the brand fork, not ulmo/indigo. The two
+# lines must move together; see openedx-deploy/versions.yml (also_pinned_at).
+NIGHT_QUEST_BRAND_REPO = "github:Scient-Systems/brand-openedx#verawood/indigo"
+
+brand_styled_mfes = indigo_styled_mfes + ["authn", "sqa-payment"]
+
+for mfe in brand_styled_mfes:
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            f"mfe-dockerfile-post-npm-install-{mfe}",
+            f"RUN npm install '@edx/brand@{NIGHT_QUEST_BRAND_REPO}'",
+        )
     )
-)
 
 # Add react components and patches from tutor-indigo
 for path in itertools.chain(
@@ -204,7 +228,32 @@ INDIGO_DESKTOP_SECONDARY_MENU_SLOT = (
 """,
 )
 
+# SQA: theme toggle inside the mobile hamburger panel. The desktop toggle lives in
+# desktop_secondary_menu_slot, which never renders on mobile, so without this there
+# is no way to switch theme on a phone.
+SQA_MOBILE_THEME_TOGGLE_SLOT = (
+    "org.openedx.frontend.layout.header_mobile_main_menu.v1",
+    """
+    {
+        op: PLUGIN_OPERATIONS.Insert,
+        widget: {
+            id: 'theme_switch_button_mobile',
+            type: DIRECT_PLUGIN,
+            RenderWidget: ToggleThemeButton,
+        },
+    },
+""",
+)
+
 # Hide the default mobile header (it only shows the logo) and replace it.
+# SQA: NOT APPLIED - see the loop below. Upstream hides the default mobile header
+# and swaps in the logo-only MobileViewHeader. On Ulmo's header the default
+# contents were the FULL mobile header (hamburger -> main menu, including the
+# Membership link injected by the sqa_payment plugin, plus the mobile user menu),
+# so hiding it left phones with no navigation at all (found 2026-07-14).
+# Kept defined because FRONTEND_COMPAT_SLOTS below still references it.
+# TODO(verawood): re-check on the v22 header - if upstream fixed the default
+# contents, we can drop our override and take theirs.
 INDIGO_MOBILE_HEADER_SLOT = (
     "mobile_header_slot",
     """
@@ -251,7 +300,9 @@ for mfe in indigo_styled_mfes:
     PLUGIN_SLOTS.add_item((mfe, *INDIGO_FOOTER_SLOT))
     if mfe != "learning":
         PLUGIN_SLOTS.add_item((mfe, *INDIGO_DESKTOP_SECONDARY_MENU_SLOT))
-        PLUGIN_SLOTS.add_item((mfe, *INDIGO_MOBILE_HEADER_SLOT))
+        # SQA: ours, instead of upstream's INDIGO_MOBILE_HEADER_SLOT. See the note
+        # on that constant - upstream's version removes phone navigation.
+        PLUGIN_SLOTS.add_item((mfe, *SQA_MOBILE_THEME_TOGGLE_SLOT))
 
 PLUGIN_SLOTS.add_items(
     [
@@ -318,26 +369,135 @@ PLUGIN_SLOTS.add_items(
     ]
 )
 
+# Flight-deck redesign widgets for the learner dashboard (Meridian/Grove).
+# Components live in tutorindigo/components/Sqa*.jsx and are styled by
+# brand-openedx paragon/_dashboard.scss.
+PLUGIN_SLOTS.add_items(
+    [
+        (
+            # Hero band (greeting + resume runway + stat strip) above the
+            # stock course list. priority 1 renders it before default_contents
+            # (priority 50); CSS `order` lifts it above the panel heading.
+            "learner-dashboard",
+            "org.openedx.frontend.learner_dashboard.course_list.v1",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_dashboard_hero',
+                type: DIRECT_PLUGIN,
+                priority: 1,
+                RenderWidget: SqaDashboardHero,
+            },
+        },
+        """,
+        ),
+        (
+            # Replace the stock "Looking for a challenge?" sidebar card with
+            # the membership instrument rail (live sqa plugin API data).
+            "learner-dashboard",
+            "org.openedx.frontend.learner_dashboard.widget_sidebar.v1",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_membership_instrument',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaMembershipInstrument,
+            },
+        },
+        """,
+        ),
+        (
+            # AI token card in the profile form (below Education field).
+            "profile",
+            "org.openedx.frontend.profile.additional_profile_fields.v1",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_token_card',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaTokenCard,
+            },
+        },
+        """,
+        ),
+        (
+            # Designed empty state (ghost wordmark + catalog CTA).
+            "learner-dashboard",
+            "org.openedx.frontend.learner_dashboard.no_courses_view.v1",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_dashboard_empty',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaDashboardEmptyState,
+            },
+        },
+        """,
+        ),
+    ]
+)
+
+# Runtime token CSS, served from OUR brand fork rather than edly-io's.
+#
+# DO NOT use raw.githubusercontent.com here: it serves text/plain with
+# X-Content-Type-Options: nosniff, so browsers silently refuse to apply it as a
+# stylesheet. Upstream v22 ships raw URLs for paragon_theme_urls; we override
+# them for that reason. jsDelivr serves proper text/css.
+#
+# BRAND_DIST_REF must be a COMMIT SHA: jsDelivr cannot parse the branch name
+# (the slash in "verawood/indigo" breaks its @ref syntax), and a SHA makes
+# caching deterministic. ON EVERY brand-openedx PUSH: bump this SHA, then
+# `tutor config save && tutor k8s start && kubectl -n <ns> rollout restart
+# deployment/lms` (no mfe image rebuild needed for CSS).
+#
+# TODO(verawood): still the ULMO dist SHA. Bump to the first
+# Scient-Systems/brand-openedx verawood/indigo commit once that branch exists,
+# and keep it in step with versions.yml (also_pinned_at: BRAND_DIST_REF).
+BRAND_DIST_REF = "67efa71a96ffe526dfa489fdcfbbcb12b8ea8155"
+BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
+
 paragon_theme_urls = {
+    # $paragonVersion is substituted by frontend-platform with each MFE's own
+    # installed paragon version.
+    "core": {
+        "urls": {
+            "default": "https://cdn.jsdelivr.net/npm/@openedx/paragon@$paragonVersion/dist/core.min.css",
+            "brandOverride": f"{BRAND_DIST_CDN}/dist/core.min.css",
+        },
+    },
     "variants": {
         "light": {
             "urls": {
-                "default": "https://raw.githubusercontent.com/edly-io/brand-openedx/refs/heads/verawood/indigo/dist/light.min.css",
-                "brandOverride": "https://raw.githubusercontent.com/edly-io/brand-openedx/refs/heads/verawood/indigo/dist/light.min.css",
+                "default": f"{BRAND_DIST_CDN}/dist/light.min.css",
+                "brandOverride": f"{BRAND_DIST_CDN}/dist/light.min.css",
             },
         },
         "dark": {
             "urls": {
-                "default": "https://raw.githubusercontent.com/edly-io/brand-openedx/refs/heads/verawood/indigo/dist/dark.min.css",
-                "brandOverride": "https://raw.githubusercontent.com/edly-io/brand-openedx/refs/heads/verawood/indigo/dist/dark.min.css",
+                "default": f"{BRAND_DIST_CDN}/dist/dark.min.css",
+                "brandOverride": f"{BRAND_DIST_CDN}/dist/dark.min.css",
             }
         },
-    }
+    },
 }
 
+# New in v22: the frontend-base "site" reads its theme from here rather than
+# from PARAGON_THEME_URLS. Same brand fork, same SHA pin, different shape.
 frontend_base_theme = {
     "core": {
-        "url": "https://cdn.jsdelivr.net/gh/edly-io/brand-openedx@refs/heads/verawood/indigo/dist/core.min.css",
+        "url": f"{BRAND_DIST_CDN}/dist/core.min.css",
     },
     "defaults": {
         "light": "light",
@@ -345,10 +505,10 @@ frontend_base_theme = {
     },
     "variants": {
         "light": {
-            "url": "https://cdn.jsdelivr.net/gh/edly-io/brand-openedx@refs/heads/verawood/indigo/dist/light.min.css",
+            "url": f"{BRAND_DIST_CDN}/dist/light.min.css",
         },
         "dark": {
-            "url": "https://cdn.jsdelivr.net/gh/edly-io/brand-openedx@refs/heads/verawood/indigo/dist/dark.min.css",
+            "url": f"{BRAND_DIST_CDN}/dist/dark.min.css",
         },
     },
 }

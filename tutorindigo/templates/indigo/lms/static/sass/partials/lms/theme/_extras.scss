@@ -4,15 +4,19 @@ $content_padding_top: 24px;
 $content-padding-bottom: 10px;
 $header-height: 75px;
 $footer-height: 125.5px;
-body, h1, h2, h3, h4, h5, h6, p, label, button {
+body, p, label, button {
+  font-family: $font-family-body !important;
+}
+h1, h2, h3, h4, h5, h6 {
   font-family: $font-family-title !important;
+  letter-spacing: -0.02em;
 }
 html {
   background: transparent !important;
 }
 body, body.view-profile {
   min-height: initial;
-  background-color: #fff;
+  background-color: $sqa-paper;
   -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -54,12 +58,13 @@ section.wiki .btn.btn-primary {
     outline-width: 2px;
 }
 
+// Meridian: squircle buttons (pills retired — chips may stay pill, buttons don't)
 %btn-pl-default-base {
-  border-radius: 0;
+  border-radius: 12px;
 }
 
 .btn, .global-header .nav-links .secondary .btn {
-  border-radius: 0;
+  border-radius: 12px;
 }
 
 %t-title {
@@ -116,7 +121,7 @@ header.global-header .nav-links .secondary .dropdown-user-menu {
 /////////////////// Home page
 .home header {
   box-shadow: none;
-  background-color: #fff;
+  background-color: transparent; // the hero panel paints itself (home/_home.scss)
 }
 
 .home > header .title {
@@ -399,12 +404,12 @@ body.view-student-notes {
     background: $primary-light !important;
     select {
       background: none;
-      color: dark;
+      color: $dark;
     }
   }
   .member-list {
     .label {
-      color: dark !important;
+      color: $dark !important;
       background: $primary-light !important;
     }
   }
@@ -907,6 +912,14 @@ body div.book-wrapper{
 }
 
 body.indigo-dark-theme {
+  // Without this, browsers paint native widgets (select popups, checkboxes,
+  // date pickers, scrollbars) with light UA colors while option text inherits
+  // the near-white theme color — white-on-white dropdowns.
+  color-scheme: dark;
+  select option, select optgroup {
+    background-color: $body-bg-d;
+    color: $text-color-d;
+  }
   input:-webkit-autofill,
   input:-webkit-autofill:hover, 
   input:-webkit-autofill:focus, 
@@ -1721,3 +1734,4 @@ body.indigo-dark-theme {
 @import '../../../views/teams';
 @import '../../../views/wiki';
 @import '../../../courseware/responsive-nav';
+@import '../../../extra/night-quest'; // Meridian polish (legacy filename)

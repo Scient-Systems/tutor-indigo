@@ -12,11 +12,11 @@ const AddDarkTheme = () => {
         const style = document.createElement('style');
         style.textContent = `
           body {
-            background-color: #0D0D0E;
-            color: #ccc;
+            background-color: #0A1226;
+            color: #C2CDE8;
           }
-          a { color: #ccc; }
-          a:hover { color: #d3d3d3; }
+          a { color: #6FA8FF; }
+          a:hover { color: #E9EEFA; }
         `;
         if (iframes[index].contentDocument) {
           iframes[index].contentDocument.head.appendChild(style);
