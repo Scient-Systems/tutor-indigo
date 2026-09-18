@@ -161,38 +161,15 @@ const SqaCatalogCard = ({
   );
 };
 
-// Adapter for the stock course_card slots, which pass camelCase props and no
-// level or tags. The card simply omits what it isn't given.
-const SqaCatalogSlotCard = ({
-  courseId, courseName, courseNumber, courseImageUrl, courseStartDate, courseAdvertisedStart, isLoading,
-}) => {
-  if (isLoading) {
-    return (
-      <div className="sqa-cat">
-        <div className="sqa-cat-card sqa-cat-skeleton" aria-hidden="true" />
-      </div>
-    );
-  }
-  return (
-    <div className="sqa-cat">
-      <SqaCatalogCard
-        courseId={courseId}
-        title={courseName}
-        code={courseNumber}
-        start={courseStartDate}
-        advertisedStart={courseAdvertisedStart}
-        imageUrl={courseImageUrl}
-      />
-    </div>
-  );
-};
-
 // ---- search -----------------------------------------------------------------
-const sqaCatSearch = ({ pageIndex = 0, pageSize = SQA_CAT_PAGE_SIZE, filters = {}, byStart = false }) => {
+const sqaCatSearch = ({
+  pageIndex = 0, pageSize = SQA_CAT_PAGE_SIZE, filters = {}, byStart = false, searchString = '',
+}) => {
   const form = new FormData();
   form.append('page_size', String(pageSize));
   form.append('page_index', String(pageIndex));
   form.append('enable_course_sorting_by_start_date', String(byStart));
+  if (searchString) { form.append('search_string', searchString); }
   Object.keys(filters).forEach((key) => {
     (filters[key] || []).forEach((value) => form.append(key, value));
   });
@@ -216,55 +193,70 @@ const sqaCatFromHit = (hit) => {
   };
 };
 
-// ---- banner -----------------------------------------------------------------
-const SqaCatalogBanner = () => {
-  const config = getConfig();
-  const [total, setTotal] = useState(null);
-  const [query, setQuery] = useState('');
+const sqaCatCoursesUrl = (query) => {
+  const base = (getConfig().PUBLIC_PATH || '/').replace(/\/?$/, '/');
+  const q = (query || '').trim();
+  return q ? `${base}courses?search_query=${encodeURIComponent(q)}` : `${base}courses`;
+};
 
-  useEffect(() => {
-    let alive = true;
-    sqaCatSearch({ pageSize: 1 })
-      .then((data) => { if (alive) { setTotal(typeof data.total === 'number' ? data.total : null); } })
-      .catch(() => {});
-    return () => { alive = false; };
-  }, []);
-
+// Shared search box. `tone` is "night" on the dark banner, "day" on a page.
+const SqaCatSearchForm = ({ initial = '', tone = 'night' }) => {
+  const [query, setQuery] = useState(initial);
   const onSubmit = (e) => {
     e.preventDefault();
-    const base = (config.PUBLIC_PATH || '/').replace(/\/?$/, '/');
-    window.location.assign(`${base}courses?search_query=${encodeURIComponent(query.trim())}`);
+    window.location.assign(sqaCatCoursesUrl(query));
   };
-
-  let facts = '';
-  if (total === 0) { facts = 'Nothing is published yet.'; }
-  if (total > 0) { facts = total === 1 ? '1 course' : `${total} courses`; }
-
   return (
-    <section className="sqa-cat sqa-cat-banner">
-      <div className="sqa-cat-wrap">
-        <h1 className="sqa-cat-headline">
-          {config.SQA_CATALOG_HEADLINE || 'Every course we teach, from first steps to final projects.'}
-        </h1>
-        {facts ? <p className="sqa-cat-facts">{facts}</p> : null}
-        <form className="sqa-cat-find" role="search" onSubmit={onSubmit}>
-          <label className="sqa-cat-sr" htmlFor="sqa-cat-q">Search courses</label>
-          <input
-            id="sqa-cat-q"
-            type="search"
-            value={query}
-            placeholder="Search by title, tag, or course code"
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          <button type="submit">Search</button>
-        </form>
-      </div>
-    </section>
+    <form className={tone === 'day' ? 'sqa-cat-find sqa-cat-find-day' : 'sqa-cat-find'} role="search" onSubmit={onSubmit}>
+      <label className="sqa-cat-sr" htmlFor="sqa-cat-q">Search courses</label>
+      <input
+        id="sqa-cat-q"
+        type="search"
+        value={query}
+        placeholder="Search by title, tag, or course code"
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <button type="submit">Search</button>
+    </form>
+  );
+};
+
+// ---- homepage banner ----------------------------------------------------------
+// The course count lives in the list panel below, not here, so it is shown once.
+const SqaCatalogBanner = () => (
+  <section className="sqa-cat sqa-cat-banner">
+    <div className="sqa-cat-wrap">
+      <h1 className="sqa-cat-headline">
+        {getConfig().SQA_CATALOG_HEADLINE || 'Every course we teach, from first steps to final projects.'}
+      </h1>
+      <SqaCatSearchForm />
+    </div>
+  </section>
+);
+
+// ---- the /courses page --------------------------------------------------------
+// The stock page wraps every slot in a fixed-width container, so a full-bleed
+// banner cannot work here. This is the same list on a light page instead; the
+// stock search field and data table are hidden (see plugin.py).
+const SqaCatalogCoursesPage = () => {
+  const initial = new URLSearchParams(window.location.search).get('search_query') || '';
+  return (
+    <div className="sqa-cat sqa-cat-page">
+      <h1 className="sqa-cat-page-title">Explore courses</h1>
+      {initial ? (
+        <p className="sqa-cat-page-sub">
+          {`Results for "${initial}". `}
+          <a href={sqaCatCoursesUrl('')}>Clear search</a>
+        </p>
+      ) : null}
+      <SqaCatSearchForm initial={initial} tone="day" />
+      <SqaCatalogList searchString={initial} flat />
+    </div>
   );
 };
 
 // ---- course list with facets --------------------------------------------------
-const SqaCatalogList = () => {
+const SqaCatalogList = ({ searchString = '', flat = false }) => {
   const [level, setLevel] = useState(null);
   const [tag, setTag] = useState(null);
   const [byStart, setByStart] = useState(false);
@@ -292,19 +284,19 @@ const SqaCatalogList = () => {
     if (level) { filters.level = [level]; }
     if (tag) { filters.tags = [tag]; }
     if (pageIndex === 0) { setStatus('loading'); }
-    sqaCatSearch({ pageIndex, filters, byStart })
+    sqaCatSearch({ pageIndex, filters, byStart, searchString })
       .then((data) => {
         if (!alive) { return; }
         const hits = (data.results || []).map(sqaCatFromHit);
         setRows((prev) => (pageIndex === 0 ? hits : prev.concat(hits)));
         setTotal(data.total || 0);
         setAggs(data.aggs || {});
-        if (!level && !tag) { setGrand(data.total || 0); }
+        if (!level && !tag && !searchString) { setGrand(data.total || 0); }
         setStatus('ready');
       })
       .catch(() => { if (alive) { setStatus('error'); } });
     return () => { alive = false; };
-  }, [level, tag, byStart, pageIndex, attempt]);
+  }, [level, tag, byStart, pageIndex, attempt, searchString]);
 
   const levelTerms = (aggs.level && aggs.level.terms) || {};
   const tagTerms = (aggs.tags && aggs.tags.terms) || {};
@@ -341,10 +333,11 @@ const SqaCatalogList = () => {
     </button>
   );
 
+  const wrapClass = flat ? '' : 'sqa-cat-wrap';
   return (
-    <div className="sqa-cat sqa-cat-list">
-      <div className="sqa-cat-wrap">
-        <div className="sqa-cat-panel">
+    <div className={flat ? 'sqa-cat sqa-cat-list sqa-cat-list-flat' : 'sqa-cat sqa-cat-list'}>
+      <div className={wrapClass}>
+        <div className={flat ? 'sqa-cat-panel sqa-cat-panel-flat' : 'sqa-cat-panel'}>
           <div className="sqa-cat-controls">
             <p className="sqa-cat-total">
               {total === 1 ? '1 course' : `${total} courses`}
@@ -395,8 +388,17 @@ const SqaCatalogList = () => {
 
         {status === 'ready' && rows.length === 0 ? (
           <div className="sqa-cat-empty">
-            <h2>Nothing matches those filters</h2>
-            <p>Remove one to see more. The number on each filter shows what it would return.</p>
+            {searchString && !level && !tag ? (
+              <React.Fragment>
+                <h2>{`No courses match "${searchString}"`}</h2>
+                <p>Try a shorter word, a tag such as AI, or a course code.</p>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <h2>Nothing matches those filters</h2>
+                <p>Remove one to see more. The number on each filter shows what it would return.</p>
+              </React.Fragment>
+            )}
           </div>
         ) : null}
 

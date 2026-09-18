@@ -418,10 +418,12 @@ PLUGIN_SLOTS.add_items(
         """,
         ),
         (
-            # The /courses page keeps its stock search and table; only the card
-            # changes, so both pages show courses the same way.
+            # /courses: the stock page (square-checkbox filter sidebar, Audit,
+            # Organizations...) is replaced by the same list as the homepage.
+            # Its slots all sit inside a fixed-width container, so this is a light
+            # page with a title and search rather than the full-bleed banner.
             "catalog",
-            "org.openedx.frontend.catalog.course_catalog_page.data_table.course_card",
+            "org.openedx.frontend.catalog.course_catalog_page.intro",
             """
         {
             op: PLUGIN_OPERATIONS.Hide,
@@ -430,10 +432,30 @@ PLUGIN_SLOTS.add_items(
         {
             op: PLUGIN_OPERATIONS.Insert,
             widget: {
-                id: 'sqa_catalog_card',
+                id: 'sqa_catalog_courses_page',
                 type: DIRECT_PLUGIN,
-                RenderWidget: SqaCatalogSlotCard,
+                RenderWidget: SqaCatalogCoursesPage,
             },
+        },
+        """,
+        ),
+        (
+            "catalog",
+            "org.openedx.frontend.catalog.course_catalog_page.search_field",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        """,
+        ),
+        (
+            "catalog",
+            "org.openedx.frontend.catalog.course_catalog_page.data_table",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
         },
         """,
         ),
@@ -548,8 +570,18 @@ PLUGIN_SLOTS.add_items(
 #
 # This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
-BRAND_DIST_REF = "543d61868736509dfc52b3fcb417574512277eea"
+BRAND_DIST_REF = "4ad82dd1e03a532112eb6d978a756ef3f11929a2"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
+
+# Which theme a visitor gets before they have chosen one. frontend-platform
+# (v8.7 useParagonTheme.getDefaultThemeVariant) picks, in order: the only
+# variant if just one is configured; the visitor's saved choice; the "dark"
+# default if their system prefers dark; otherwise the "light" default.
+# Pointing BOTH defaults at dark makes everyone start dark, while the toggle
+# (shown to logged-in users) can still switch to light. For dark ONLY, drop the
+# "light" entry from paragon_theme_urls["variants"] and set
+# INDIGO_ENABLE_DARK_TOGGLE to False so the toggle isn't a dead button.
+SQA_DEFAULT_THEME_VARIANT = "dark"
 
 paragon_theme_urls = {
     # $paragonVersion is substituted by frontend-platform with each MFE's own
@@ -559,6 +591,10 @@ paragon_theme_urls = {
             "default": "https://cdn.jsdelivr.net/npm/@openedx/paragon@$paragonVersion/dist/core.min.css",
             "brandOverride": f"{BRAND_DIST_CDN}/dist/core.min.css",
         },
+    },
+    "defaults": {
+        "light": SQA_DEFAULT_THEME_VARIANT,
+        "dark": "dark",
     },
     "variants": {
         "light": {
@@ -583,7 +619,7 @@ frontend_base_theme = {
         "url": f"{BRAND_DIST_CDN}/dist/core.min.css",
     },
     "defaults": {
-        "light": "light",
+        "light": SQA_DEFAULT_THEME_VARIANT,
         "dark": "dark",
     },
     "variants": {
