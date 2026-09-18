@@ -6,3 +6,4 @@
 {{- patch("SqaMembershipInstrument.jsx") }}
 {{- patch("SqaDashboardEmptyState.jsx") }}
 {{- patch("SqaTokenCard.jsx") }}
+{{- patch("SqaCatalog.jsx") }}

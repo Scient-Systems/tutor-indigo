@@ -115,6 +115,10 @@ indigo_styled_mfes = [
     "account",
     "discussions",
     "authoring",
+    # SQA: on Verawood the Catalog MFE is the homepage, so it needs the same
+    # header, footer and brand package as everything else. Upstream v22.0.0
+    # does not style it.
+    "catalog",
 ]
 
 # All MFEs that need header component dependencies. Our header/footer and the
@@ -131,6 +135,7 @@ all_mfes_needing_deps = [
     "gradebook",
     "ora-grading",
     "communications",
+    "catalog",
 ]
 
 mfe_deps_install = "RUN npm install react-responsive @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core"
@@ -369,6 +374,85 @@ PLUGIN_SLOTS.add_items(
     ]
 )
 
+# Catalog MFE homepage (Verawood): our banner and course list replace the stock
+# ones, and the full catalog page reuses the same card. Components live in
+# tutorindigo/components/SqaCatalog.jsx; styles in brand-openedx
+# paragon/_catalog.scss. Data comes from the LMS course search, with level and
+# tags indexed by sqa_django_app.
+PLUGIN_SLOTS.add_items(
+    [
+        (
+            "catalog",
+            "org.openedx.frontend.catalog.home_page.banner",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_catalog_banner',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaCatalogBanner,
+            },
+        },
+        """,
+        ),
+        (
+            "catalog",
+            "org.openedx.frontend.catalog.home_page.courses_list",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_catalog_list',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaCatalogList,
+            },
+        },
+        """,
+        ),
+        (
+            # The /courses page keeps its stock search and table; only the card
+            # changes, so both pages show courses the same way.
+            "catalog",
+            "org.openedx.frontend.catalog.course_catalog_page.data_table.course_card",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_catalog_card',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaCatalogSlotCard,
+            },
+        },
+        """,
+        ),
+    ]
+)
+
+# Level order for the catalog. SQA_CATALOG_LEVELS is set by sqa_django_app; the
+# guard keeps this theme working on a platform without it (levels then show in
+# the order the search index returns them).
+hooks.Filters.ENV_PATCHES.add_item(
+    (
+        "mfe-lms-common-settings",
+        """
+if "SQA_CATALOG_LEVELS" in globals():
+    MFE_CONFIG["SQA_CATALOG_LEVELS"] = SQA_CATALOG_LEVELS
+""",
+    )
+)
+
 # Flight-deck redesign widgets for the learner dashboard (Meridian/Grove).
 # Components live in tutorindigo/components/Sqa*.jsx and are styled by
 # brand-openedx paragon/_dashboard.scss.
@@ -464,7 +548,7 @@ PLUGIN_SLOTS.add_items(
 #
 # This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
-BRAND_DIST_REF = "51a9c3f93eca529914d27a4371793eaff98251a2"
+BRAND_DIST_REF = "543d61868736509dfc52b3fcb417574512277eea"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 
 paragon_theme_urls = {
