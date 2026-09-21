@@ -570,7 +570,7 @@ PLUGIN_SLOTS.add_items(
 #
 # This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
-BRAND_DIST_REF = "4ad82dd1e03a532112eb6d978a756ef3f11929a2"
+BRAND_DIST_REF = "427bd60a7709f405823b33fe98a2f9d84a90efdb"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 
 # Which theme a visitor gets before they have chosen one. frontend-platform

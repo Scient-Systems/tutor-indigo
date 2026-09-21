@@ -41,6 +41,13 @@ const ToggleThemeButton = () => {
       setCookie(name, value, opts);
     }
   };
+  // The page's real variant. Dark is the configured default, so a first-time
+  // visitor has no cookie yet: going by the cookie alone, the switch showed
+  // "light" on a dark page and the first click "switched" to dark (no change).
+  const getCurrentTheme = () => (
+    document.documentElement.getAttribute(themeAttributeNames[0]) || getThemeCookie()
+  );
+
   const setThemeAttribute = (theme) => {
     for (const attr of themeAttributeNames) {
       document.documentElement.setAttribute(attr, theme);
@@ -67,7 +74,7 @@ const ToggleThemeButton = () => {
   const onToggleTheme = () => {
     let theme = '';
 
-    if (getThemeCookie() === 'dark') {
+    if (getCurrentTheme() === 'dark') {
       setThemeAttribute('light');
       setIsDarkThemeEnabled(false);
       theme = 'light';
@@ -85,6 +92,16 @@ const ToggleThemeButton = () => {
       window.location.reload();
     }, 1);
   };
+
+  // frontend-platform sets the variant attribute once the theme CSS loads,
+  // which can be after this renders; follow it so the switch matches the page.
+  useEffect(() => {
+    const sync = () => setIsDarkThemeEnabled(getCurrentTheme() === 'dark');
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: [themeAttributeNames[0]] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const cookie = getThemeCookie();
@@ -127,7 +144,7 @@ const ToggleThemeButton = () => {
         <label htmlFor="theme-toggle-checkbox" className="switch">
           <input
             id="theme-toggle-checkbox"
-            defaultChecked={getThemeCookie() === "dark"}
+            checked={isDarkThemeEnabled}
             onChange={onToggleTheme}
             onKeyUp={handleKeyUp}
             type="checkbox"
