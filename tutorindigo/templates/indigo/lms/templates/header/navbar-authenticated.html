@@ -25,9 +25,15 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
   else:
     help_link = doc_link
 
-  membership_url = configuration_helpers.get_value(
-    'SQA_PAYMENT_MFE_URL', getattr(settings, 'SQA_PAYMENT_MFE_URL', '')
-  )
+  ## The payment MFE's host, derived from the platform's own MFE host rather
+  ## than a per-environment setting (sqa_django_app.utils.payment_app_url does
+  ## the same server-side). Empty when no MFE host is configured, which hides
+  ## the link instead of pointing it at the wrong place.
+  mfe_base = (getattr(settings, 'MFE_CONFIG', None) or {}).get('BASE_URL', '')
+  if mfe_base and '://' not in mfe_base:
+    lms_scheme = (getattr(settings, 'LMS_ROOT_URL', '') or '').split('://')[0] or 'https'
+    mfe_base = lms_scheme + '://' + mfe_base
+  membership_url = (mfe_base + '/sqa-payment') if mfe_base else ''
 %>
 
 <div class="nav-links">

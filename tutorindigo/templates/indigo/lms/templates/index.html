@@ -9,7 +9,12 @@ from django.urls import reverse
 from openedx.core.djangolib.markup import HTML, Text
 %>
 <%
-sqa_membership_url = getattr(settings, 'SQA_PAYMENT_MFE_URL', '')
+## See navbar-authenticated.html: derived, never a per-environment setting.
+mfe_base = (getattr(settings, 'MFE_CONFIG', None) or {}).get('BASE_URL', '')
+if mfe_base and '://' not in mfe_base:
+    lms_scheme = (getattr(settings, 'LMS_ROOT_URL', '') or '').split('://')[0] or 'https'
+    mfe_base = lms_scheme + '://' + mfe_base
+sqa_membership_url = (mfe_base + '/sqa-payment') if mfe_base else ''
 %>
 
 <main id="main" class="mer-index" aria-label="Content" tabindex="-1">
