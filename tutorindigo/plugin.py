@@ -459,6 +459,18 @@ PLUGIN_SLOTS.add_items(
         },
         """,
         ),
+        (
+            # Course about page: no price row. Access is by membership plan,
+            # so a per-course price ("Free") is wrong for every course.
+            "catalog",
+            "org.openedx.frontend.catalog.course_about_page.sidebar.details.course_price",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        """,
+        ),
     ]
 )
 
@@ -570,7 +582,7 @@ PLUGIN_SLOTS.add_items(
 #
 # This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
-BRAND_DIST_REF = "517bffc5d6838bdee585e5790baafb309a223718"
+BRAND_DIST_REF = "bdee36d9069de217e9911cf7141ff09b9d71fa72"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 
 # Which theme a visitor gets before they have chosen one. frontend-platform
