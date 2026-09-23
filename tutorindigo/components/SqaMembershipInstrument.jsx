@@ -59,7 +59,7 @@ const SqaMembershipInstrument = () => {
   const currentSlug = membership && membership.level_slug ? membership.level_slug : 'free';
   const currentTier = tiers.find((t) => t.slug === currentSlug) || tiers[tiers.length - 1];
   const isTop = memberLoaded && currentTier && tiers.length && currentTier.slug === tiers[0].slug;
-  const payBase = `${window.location.origin}/sqa-payment`;
+  const payBase = '/sqa-payment';   // same host as this page
   const validThru = membership && membership.end_date
     ? new Date(membership.end_date)
       .toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
@@ -69,7 +69,7 @@ const SqaMembershipInstrument = () => {
   return (
     <aside id="sqa-rail">
       <section id="sqa-membership" aria-label="Membership level">
-        <p className="sqa-eyebrow sqa-eyebrow--night">CLEARANCE LEVEL</p>
+        <p className="sqa-eyebrow sqa-eyebrow--night">YOUR PLAN</p>
         <h3 className="sqa-mem-level">
           {memberLoaded && currentTier ? currentTier.display_name : '—'}
         </h3>
@@ -89,15 +89,13 @@ const SqaMembershipInstrument = () => {
               >
                 <span className="sqa-tier-dot" aria-hidden="true" />
                 <span className="sqa-tier-name">{t.display_name}</span>
-                {isCurrent
-                  ? <span className="sqa-tier-flag">CURRENT</span>
-                  : <span className="sqa-tier-rank">T{String(t.rank).padStart(2, '0')}</span>}
+                {isCurrent ? <span className="sqa-tier-flag">CURRENT</span> : null}
               </li>
             );
           })}
         </ol>
         <a className="sqa-btn sqa-btn--night" href={isTop ? `${payBase}/manage` : `${payBase}/`}>
-          {isTop ? 'Manage membership' : 'Upgrade clearance'}
+          {isTop ? 'Manage membership' : 'Upgrade plan'}
           <svg className="sqa-btn-arrow" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
             <path d="M2 8h10M8 3l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -109,8 +107,8 @@ const SqaMembershipInstrument = () => {
 
       <a className="sqa-explore" href={`${config.LMS_BASE_URL}/courses`}>
         <span className="sqa-explore-meta">
-          <span className="sqa-eyebrow">EXPANSION</span>
-          <span className="sqa-explore-title">Chart a new course</span>
+          <span className="sqa-eyebrow">MORE COURSES</span>
+          <span className="sqa-explore-title">Browse the catalog</span>
         </span>
         <span className="sqa-explore-arrow" aria-hidden="true">
           <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">

@@ -103,7 +103,7 @@ const SqaDashboardHero = () => {
 
   return (
     <section id="sqa-dash-hero" aria-label="Dashboard overview">
-      <p className="sqa-eyebrow">FLIGHT DECK · {dateLabel}</p>
+      <p className="sqa-eyebrow">{dateLabel}</p>
       <h2 className="sqa-hero-title">
         {greeting}{authUser && authUser.username ? `, ${authUser.username}` : ''}
       </h2>
