@@ -1,0 +1,702 @@
+<%page expression_filter="h"/>
+## Stem Quest Academy certificate (Grove edition).
+##
+## Replaces the stock certificates/valid.html. One standalone page: the night
+## edition on screen, the paper edition when printed, a stacked layout on phones.
+## Rules: the learner's full name only (never the username); level, grade, date,
+## ID and signatories come from the platform, nothing is typed in here.
+## Rendered by Tutor's Jinja first, so this file must not contain Jinja
+## delimiters, and by Mako second, so no JS template literals.
+<%!
+from django.conf import settings
+from django.utils.translation import gettext as _
+from openedx.core.djangolib.js_utils import js_escaped_string
+%>
+<%
+learner_name = (accomplishment_copy_name or '').strip()
+owner_username = getattr(getattr(user_certificate, 'user', None), 'username', '') or ''
+has_name = bool(learner_name) and learner_name != owner_username
+is_owner = bool(user.is_authenticated) and str(user.id) == str(accomplishment_user_id)
+
+cert_id = str(certificate_id_number or '')
+short_id = '-'.join(cert_id[i:i + 4] for i in (0, 4, 8)).upper() if len(cert_id) >= 12 else cert_id.upper()
+verify_url = settings.LMS_ROOT_URL.rstrip('/') + '/certificates/' + cert_id
+verify_host = settings.LMS_ROOT_URL.split('://')[-1].rstrip('/')
+issued = certificate_date_issued or ''
+## the brand, without an environment suffix such as " — K-12 (test)"
+brand_name = (platform_name or '').split(' — ')[0].strip() or platform_name
+issued_year = issued[-4:] if issued[-4:].isdigit() else ''
+
+grade_pct = None
+try:
+    grade_pct = int(round(float(getattr(user_certificate, 'grade', '') or '') * 100))
+except (TypeError, ValueError):
+    grade_pct = None
+
+course_title = accomplishment_copy_course_name
+course_code = ''
+level = ''
+level_index = 0
+level_count = 3
+try:
+    from opaque_keys.edx.keys import CourseKey
+    from xmodule.modulestore.django import modulestore
+    course_key = CourseKey.from_string(str(course_id))
+    course_code = course_key.course
+    course_obj = modulestore().get_course(course_key)
+    if course_obj is not None:
+        course_title = course_obj.display_name_with_default or course_title
+        level = ((course_obj.other_course_settings or {}).get('level') or '').strip()
+    levels = list(getattr(settings, 'SQA_CATALOG_LEVELS', None) or [])
+    if level and level in levels:
+        level_index = levels.index(level) + 1
+        level_count = len(levels)
+except Exception:
+    pass
+
+signatories = []
+if certificate_data:
+    signatories = [s for s in (certificate_data.get('signatories') or []) if s.get('name')]
+%>
+<!DOCTYPE html>
+<html lang="${LANGUAGE_CODE}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  % if facebook_share_enabled:
+  <meta property="og:url" content="${share_url}">
+  <meta property="og:title" content="${document_title}">
+  <meta property="og:description" content="${facebook_share_text}">
+  % endif
+  <title>${_('Certificate of Completion')} | ${course_title} | ${platform_name}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Mrs+Saint+Delafield&display=swap">
+  <style>
+    :root {
+      --abyss: #060B1A;
+      --moon: #E9EEFA;
+      --moon-dim: #A9B6D6;
+      --olive: #8CA12C;
+      --olive-300: #C6D465;
+      --hair: rgba(151, 170, 215, 0.22);
+      --f-display: "Sora", "Segoe UI", system-ui, sans-serif;
+      --f-body: "Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
+      --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+      --f-sign: "Mrs Saint Delafield", "Brush Script MT", cursive;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body { background: var(--abyss); color: var(--moon); font-family: var(--f-body); font-size: 16px; line-height: 1.6; }
+    .page { max-width: 1240px; margin: 0 auto; padding: 32px 20px 56px; display: grid; gap: 20px; }
+
+    /* owner-only bar */
+    .owner-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; }
+    .owner-msg { margin: 0; color: var(--moon-dim); }
+    .owner-msg a { color: #9F8BFF; }
+    .owner-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn-ghost, .btn-primary {
+      font: 600 14px/1 var(--f-body); border-radius: 12px; padding: 11px 16px; cursor: pointer; text-decoration: none; border: 0;
+    }
+    .btn-ghost { background: transparent; color: var(--moon); box-shadow: inset 0 0 0 1px var(--hair); }
+    .btn-primary { background: var(--olive); color: #101A33; }
+    .btn-primary:hover { background: #A9BC3F; }
+    .btn-ghost:focus-visible, .btn-primary:focus-visible { outline: 3px solid rgba(159, 139, 255, 0.5); outline-offset: 2px; }
+    .foot { margin: 0; text-align: center; font-size: 13px; color: var(--moon-dim); }
+
+    /* =========================================================
+       The certificate: one artboard (A4 landscape, 1.414:1),
+       everything sized in cqw of .cert-shell so it scales as one.
+       ========================================================= */
+    .cert-shell { container: cert / inline-size; }
+    .cert {
+      --c-bg:
+        radial-gradient(52cqw 40cqw at 79% 44%, rgba(159, 139, 255, 0.17), transparent 62%),
+        radial-gradient(64cqw 40cqw at 6% -8%, rgba(140, 161, 44, 0.12), transparent 60%),
+        radial-gradient(80cqw 50cqw at 55% 125%, rgba(25, 182, 201, 0.08), transparent 60%),
+        linear-gradient(158deg, #13204A 0%, #0A1226 52%, #070D1F 100%);
+      --c-ink: #F2F5FC;
+      --c-ink-2: #B3BFDC;
+      --c-label: #8E9CC0;
+      --c-accent: #C6D465;
+      --c-accent-fill: #A9BC3F;
+      --c-rule: rgba(190, 205, 240, 0.22);
+      --c-wave: rgba(214, 224, 250, 0.20);
+      --c-wave-2: rgba(198, 212, 101, 0.55);
+      --c-track: rgba(233, 238, 250, 0.12);
+      --c-dial: rgba(214, 224, 250, 0.42);
+      --c-iris-1: #9F8BFF;
+      --c-iris-2: #C6D465;
+      --c-iris-3: #45C48A;
+      --c-qr-tile: #F2F5FC;
+      --c-qr: #0A1226;
+      --c-gauge-off: rgba(233, 238, 250, 0.26);
+      position: relative;
+      aspect-ratio: 1.414 / 1;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 0.5cqw;
+      background: var(--c-bg);
+      color: var(--c-ink);
+      box-shadow: 0 40px 120px -40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(151, 170, 215, 0.18);
+      isolation: isolate;
+    }
+    .cert .layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .cert .stars { opacity: 0.55; }
+    .cert .grain {
+      opacity: 0.07; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    .wave { fill: none; stroke: var(--c-wave); stroke-width: 0.55; vector-effect: non-scaling-stroke; }
+    .wave-2 { fill: none; stroke: var(--c-wave-2); stroke-width: 0.55; vector-effect: non-scaling-stroke; }
+    .rule { fill: none; stroke: var(--c-rule); stroke-width: 1; vector-effect: non-scaling-stroke; }
+    .tick { stroke: var(--c-accent); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+    .corner-rose { fill: none; stroke: var(--c-wave-2); stroke-width: 0.6; vector-effect: non-scaling-stroke; }
+    .rosette { fill: none; stroke-width: 0.7; }
+    .dial { stroke: var(--c-dial); stroke-width: 1.1; }
+    .dial-major { stroke: var(--c-accent); stroke-width: 1.6; }
+    .track { fill: none; stroke: var(--c-track); stroke-width: 9; }
+    .meter { fill: none; stroke: var(--c-accent-fill); stroke-width: 9; stroke-linecap: round; filter: drop-shadow(0 0 6px rgba(169, 188, 63, 0.55)); }
+    .seal-text { font-family: var(--f-mono); font-size: 12.5px; letter-spacing: 0.3em; fill: var(--c-ink-2); font-weight: 600; }
+    .seal-num { font-family: var(--f-display); font-weight: 700; fill: var(--c-ink); }
+    .seal-lbl { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.3em; fill: var(--c-label); }
+    .gauge-on { fill: var(--c-accent-fill); }
+    .gauge-off { fill: var(--c-gauge-off); }
+
+    .cert .content {
+      position: absolute; inset: 0;
+      padding: 5.3cqw 6.6cqw 4.9cqw;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+    .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 2cqw; }
+    .brand .logo { height: 7.4cqw; width: auto; display: block; margin: -0.6cqw 0 0 -0.4cqw; }
+    .meta { display: grid; grid-template-columns: auto auto; column-gap: 1.4cqw; row-gap: 0.45cqw; margin: 0; }
+    .meta dt { font: 400 0.74cqw/1.4 var(--f-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--c-label); }
+    .meta dd { margin: 0; text-align: right; font: 600 0.92cqw/1.4 var(--f-mono); letter-spacing: 0.06em; color: var(--c-ink); font-variant-numeric: tabular-nums; }
+
+    .middle { display: grid; grid-template-columns: 1.5fr 1fr; align-items: center; gap: 2cqw; }
+    .eyebrow {
+      font: 600 0.92cqw/1 var(--f-mono); letter-spacing: 0.34em; text-transform: uppercase;
+      color: var(--c-accent); display: flex; align-items: center; gap: 1cqw;
+    }
+    .eyebrow::before { content: ""; width: 3.2cqw; height: 0.09cqw; background: currentColor; }
+    .lead { font: 400 1.42cqw/1.4 var(--f-body); color: var(--c-ink-2); margin: 2.4cqw 0 0; }
+    .name { font: 700 5.7cqw/1.02 var(--f-display); letter-spacing: -0.028em; margin: 0.7cqw 0 0; text-wrap: balance; max-width: 50cqw; }
+    .name--missing { color: var(--c-label); font-weight: 600; }
+    .iris {
+      height: 0.12cqw; width: 36cqw; margin: 2cqw 0 1.9cqw;
+      background: linear-gradient(90deg, transparent, var(--c-iris-1) 22%, var(--c-iris-2) 60%, var(--c-iris-3) 82%, transparent);
+    }
+    .lead2 { font: 400 1.42cqw/1.4 var(--f-body); color: var(--c-ink-2); margin: 0; }
+    .course { font: 600 2.75cqw/1.14 var(--f-display); letter-spacing: -0.02em; margin: 0.6cqw 0 0; max-width: 46cqw; text-wrap: balance; }
+    .course-meta {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.9cqw 1.6cqw;
+      margin-top: 1.9cqw; font: 500 0.86cqw/1 var(--f-mono); letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--c-ink-2);
+    }
+    .course-meta .sep { width: 0.3cqw; height: 0.3cqw; border-radius: 50%; background: var(--c-rule); }
+    .gauge { display: inline-flex; gap: 0.3cqw; margin-right: 0.8cqw; vertical-align: middle; }
+    .gauge i { width: 1.35cqw; height: 0.34cqw; border-radius: 0.2cqw; background: var(--c-gauge-off); }
+    .gauge i.on { background: var(--c-accent-fill); }
+    .level { display: inline-flex; align-items: center; color: var(--c-ink); }
+
+    .seal-wrap { position: relative; justify-self: center; width: 27cqw; aspect-ratio: 1; }
+    .seal-wrap svg { position: relative; width: 100%; height: 100%; display: block; overflow: visible; }
+    .halo {
+      position: absolute; inset: -9%; border-radius: 50%;
+      background: conic-gradient(from 0deg, rgba(159, 139, 255, 0), rgba(159, 139, 255, 0.30), rgba(198, 212, 101, 0.20), rgba(69, 196, 138, 0.22), rgba(159, 139, 255, 0));
+      filter: blur(3.2cqw); opacity: 0.85;
+    }
+
+    .bottom { position: relative; display: flex; justify-content: space-between; gap: 3.2cqw; align-items: flex-end; padding-top: 2.1cqw; }
+    .bottom::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 0.09cqw; background: var(--c-rule); }
+    .label { font: 600 0.74cqw/1 var(--f-mono); letter-spacing: 0.26em; text-transform: uppercase; color: var(--c-label); }
+    .sigs { display: flex; gap: 3cqw; flex-wrap: wrap; }
+    .sig { min-width: 20cqw; }
+    .sig-script { font: 400 3.6cqw/0.9 var(--f-sign); word-spacing: 0.35em; color: var(--c-ink); margin: 0 0 0.3cqw 0.4cqw; white-space: nowrap; }
+    .sig-img { display: block; height: 4cqw; width: auto; margin: 0 0 0.3cqw 0.2cqw; }
+    .sig-line { height: 0.09cqw; background: var(--c-rule); margin-bottom: 0.8cqw; }
+    .sig-name { font: 600 1.08cqw/1.3 var(--f-display); }
+    .sig-role { font: 400 0.8cqw/1.5 var(--f-body); color: var(--c-ink-2); }
+
+    .verify { display: flex; align-items: flex-end; gap: 1.2cqw; }
+    .verify .txt { display: grid; gap: 0.4cqw; text-align: right; }
+    .verify .url { display: grid; font: 500 0.78cqw/1.4 var(--f-mono); color: var(--c-ink); }
+    .verify .url span { white-space: nowrap; }
+    .qr { width: 7.4cqw; aspect-ratio: 1; padding: 0.45cqw; background: var(--c-qr-tile); border-radius: 0.45cqw; }
+    .qr:empty { display: none; }
+    .qr svg { display: block; width: 100%; height: 100%; }
+    .qr rect.m { fill: var(--c-qr); }
+
+    /* the reveal: line work draws in once */
+    @media (prefers-reduced-motion: no-preference) {
+      .cert.play .draw { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: draw 1.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: var(--d, 0s); }
+      .cert.play .meter { animation: meter 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.7s both; }
+      .cert.play .rise { animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--d, 0s); }
+      .cert.play .seal-spin { transform-origin: 210px 210px; animation: settle 2.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+      .halo { animation: spin 38s linear infinite; }
+    }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    @keyframes meter { from { stroke-dashoffset: var(--circ); } to { stroke-dashoffset: var(--off); } }
+    @keyframes rise { from { opacity: 0; transform: translateY(1.2cqw); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+    @keyframes settle { from { transform: rotate(-24deg); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* phones: the same certificate, stacked into a portrait card */
+    @container cert (max-width: 700px) {
+      .cert { aspect-ratio: auto; border-radius: 16px; }
+      .cert .content { position: relative; inset: auto; padding: 36px 26px 30px; display: grid; gap: 26px; grid-template-rows: none; }
+      .top { flex-direction: column; gap: 16px; }
+      .brand .logo { height: 64px; margin: 0; }
+      .meta { column-gap: 14px; }
+      .meta dt { font-size: 10px; }
+      .meta dd { font-size: 12px; text-align: left; }
+      .middle { grid-template-columns: 1fr; gap: 26px; }
+      .eyebrow { font-size: 11px; gap: 10px; letter-spacing: 0.22em; }
+      .eyebrow::before { width: 28px; height: 1px; }
+      .lead, .lead2 { font-size: 15px; margin-top: 18px; }
+      .lead2 { margin-top: 0; }
+      .name { font-size: clamp(32px, 11cqw, 48px); max-width: none; margin-top: 6px; }
+      .iris { height: 1px; width: 70%; margin: 18px 0; }
+      .course { font-size: clamp(22px, 7cqw, 28px); max-width: none; margin-top: 6px; }
+      .course-meta { font-size: 11px; gap: 10px 14px; margin-top: 16px; }
+      .course-meta .sep { display: none; }
+      .gauge { gap: 4px; margin-right: 10px; }
+      .gauge i { width: 16px; height: 4px; border-radius: 2px; }
+      .seal-wrap { width: min(78%, 300px); }
+      .halo { filter: blur(28px); }
+      .bottom { flex-direction: column; align-items: stretch; gap: 26px; padding-top: 24px; }
+      .bottom::before { height: 1px; }
+      .label { font-size: 10px; }
+      .sig { min-width: 0; }
+      .sig-script { font-size: 40px; }
+      .sig-img { height: 48px; }
+      .sig-line { height: 1px; margin-bottom: 10px; }
+      .sig-name { font-size: 15px; }
+      .sig-role { font-size: 13px; }
+      .verify { justify-content: space-between; }
+      .verify .txt { text-align: left; }
+      .verify .url { font-size: 11px; }
+      .qr { width: 96px; padding: 6px; border-radius: 8px; }
+      .cert .frame { display: none; }
+      .cert { box-shadow: 0 0 0 1px rgba(151, 170, 215, 0.22), 0 30px 80px -30px rgba(0, 0, 0, 0.8); }
+    }
+
+    /* printing: the paper edition, edge to edge on one A4 page */
+    @media print {
+      @page { size: A4 landscape; margin: 0; }
+      html, body { background: #fff; }
+      .owner-bar, .foot { display: none; }
+      .page { padding: 0; max-width: none; display: block; }
+      .cert {
+        --c-bg: linear-gradient(158deg, #FFFFFF 0%, #FAFBF5 55%, #F2F4EA 100%);
+        --c-ink: #101A33; --c-ink-2: #3F4D6D; --c-label: #5B6A8A; --c-accent: #4E5B14; --c-accent-fill: #8CA12C;
+        --c-rule: rgba(16, 26, 51, 0.16); --c-wave: rgba(16, 26, 51, 0.16); --c-wave-2: rgba(102, 119, 29, 0.55);
+        --c-track: rgba(16, 26, 51, 0.10); --c-dial: rgba(16, 26, 51, 0.38);
+        --c-iris-1: #5A41C4; --c-iris-2: #8CA12C; --c-iris-3: #1E8A55; --c-qr-tile: #fff; --c-qr: #101A33; --c-gauge-off: rgba(16, 26, 51, 0.18);
+        box-shadow: none; border-radius: 0; print-color-adjust: exact; -webkit-print-color-adjust: exact;
+      }
+      .cert .stars, .cert .grain, .cert .halo { display: none; }
+      .meter { filter: none; }
+      /* no reveal on paper: frame lines fully drawn; the grade ring keeps its real length */
+      .rise, .seal-spin, .meter { animation: none !important; opacity: 1 !important; }
+      .draw { animation: none !important; stroke-dashoffset: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    % if is_owner:
+    <div class="owner-bar">
+      <p class="owner-msg">
+        % if has_name:
+          ${_('Your certificate is ready to share.')}
+        % else:
+          ${_('Add your full name in Account Settings so it appears on your certificate.')}
+          <a href="${settings.ACCOUNT_MICROFRONTEND_URL or '/account/settings'}">${_('Account Settings')}</a>
+        % endif
+      </p>
+      <div class="owner-actions">
+        <button type="button" class="btn-ghost" id="copy-link" data-url="${verify_url}">${_('Copy link')}</button>
+        % if linked_in_url:
+        <a class="btn-ghost" href="${linked_in_url}" target="_blank" rel="noopener">${_('Add to LinkedIn')}</a>
+        % endif
+        <button type="button" class="btn-primary" id="print-cert">${_('Print')}</button>
+      </div>
+    </div>
+    % endif
+
+    <div class="cert-shell">
+      <article class="cert play" id="cert" aria-label="${_('Certificate of completion')}"
+               data-grade="${grade_pct if grade_pct is not None else ''}" data-url="${verify_url}">
+        <svg class="layer stars" id="stars" viewBox="0 0 1414 1000" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <div class="layer grain" aria-hidden="true"></div>
+        <svg class="layer frame" id="frame" viewBox="0 0 1414 1000" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+        <div class="content">
+          <header class="top">
+            <div class="brand rise" style="--d: 0.05s">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" class="logo" role="img" aria-label="Stem Quest Academy">
+              <title>Stem Quest Academy</title>
+              <defs>
+              <mask id="m0" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="360"><path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" transform="translate(68.0 40.0) rotate(-5 50 50)" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask>
+              <mask id="m1" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="360"><path d="M16 16 H84 M50 16 V88" transform="translate(160.0 33.0) rotate(4 50 50)" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask>
+              <mask id="m2" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="360"><path d="M76 14 H26 V86 H76 M26 50 H64" transform="translate(252.0 45.0) rotate(-3 50 50)" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask>
+              <mask id="m3" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="360"><path d="M18 88 V14 L50 58 L82 14 V88" transform="translate(344.0 36.0) rotate(5 50 50)" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask>
+              <mask id="m4" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="360"><path d="M50 12 C24 12 16 34 16 50 C16 70 28 88 50 88 C72 88 84 70 84 50 C84 30 76 12 50 12 Z M60 66 L86 92" transform="translate(22.0 147.0) rotate(4 50 50)" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask>
+              <mask id="m5" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="360"><path d="M20 14 V56 C20 80 34 88 50 88 C66 88 80 80 80 56 V14" transform="translate(114.0 155.0) rotate(-4 50 50)" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask>
+              <mask id="m6" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="360"><path d="M76 14 H26 V86 H76 M26 50 H64" transform="translate(206.0 144.0) rotate(3 50 50)" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask>
+              <mask id="m7" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="360"><path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" transform="translate(298.0 154.0) rotate(-5 50 50)" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask>
+              <mask id="m8" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="360"><path d="M16 16 H84 M50 16 V88" transform="translate(390.0 148.0) rotate(4 50 50)" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></mask>
+              </defs>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF">
+              <path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" transform="translate(68.0 40.0) rotate(-5 50 50)" stroke-width="66"/>
+              <path d="M16 16 H84 M50 16 V88" transform="translate(160.0 33.0) rotate(4 50 50)" stroke-width="66"/>
+              <path d="M76 14 H26 V86 H76 M26 50 H64" transform="translate(252.0 45.0) rotate(-3 50 50)" stroke-width="66"/>
+              <path d="M18 88 V14 L50 58 L82 14 V88" transform="translate(344.0 36.0) rotate(5 50 50)" stroke-width="66"/>
+              <path d="M50 12 C24 12 16 34 16 50 C16 70 28 88 50 88 C72 88 84 70 84 50 C84 30 76 12 50 12 Z M60 66 L86 92" transform="translate(22.0 147.0) rotate(4 50 50)" stroke-width="66"/>
+              <path d="M20 14 V56 C20 80 34 88 50 88 C66 88 80 80 80 56 V14" transform="translate(114.0 155.0) rotate(-4 50 50)" stroke-width="66"/>
+              <path d="M76 14 H26 V86 H76 M26 50 H64" transform="translate(206.0 144.0) rotate(3 50 50)" stroke-width="66"/>
+              <path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" transform="translate(298.0 154.0) rotate(-5 50 50)" stroke-width="66"/>
+              <path d="M16 16 H84 M50 16 V88" transform="translate(390.0 148.0) rotate(4 50 50)" stroke-width="66"/>
+              <path d="M118 90 H394" stroke-width="90"/>
+              <path d="M72 200 H440" stroke-width="90"/>
+              <path d="M110 145 H450" stroke-width="84"/>
+              <path d="M70 300 H438" stroke-width="70"/>
+              <path d="M280.0 200 V300" stroke-width="134" stroke-linecap="butt"/>
+              </g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#0B2A63">
+              <path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" transform="translate(68.0 40.0) rotate(-5 50 50)" stroke-width="52"/>
+              <path d="M16 16 H84 M50 16 V88" transform="translate(160.0 33.0) rotate(4 50 50)" stroke-width="52"/>
+              <path d="M76 14 H26 V86 H76 M26 50 H64" transform="translate(252.0 45.0) rotate(-3 50 50)" stroke-width="52"/>
+              <path d="M18 88 V14 L50 58 L82 14 V88" transform="translate(344.0 36.0) rotate(5 50 50)" stroke-width="52"/>
+              <path d="M50 12 C24 12 16 34 16 50 C16 70 28 88 50 88 C72 88 84 70 84 50 C84 30 76 12 50 12 Z M60 66 L86 92" transform="translate(22.0 147.0) rotate(4 50 50)" stroke-width="52"/>
+              <path d="M20 14 V56 C20 80 34 88 50 88 C66 88 80 80 80 56 V14" transform="translate(114.0 155.0) rotate(-4 50 50)" stroke-width="52"/>
+              <path d="M76 14 H26 V86 H76 M26 50 H64" transform="translate(206.0 144.0) rotate(3 50 50)" stroke-width="52"/>
+              <path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" transform="translate(298.0 154.0) rotate(-5 50 50)" stroke-width="52"/>
+              <path d="M16 16 H84 M50 16 V88" transform="translate(390.0 148.0) rotate(4 50 50)" stroke-width="52"/>
+              <path d="M118 90 H394" stroke-width="76"/>
+              <path d="M72 200 H440" stroke-width="76"/>
+              <path d="M110 145 H450" stroke-width="70"/>
+              <path d="M70 300 H438" stroke-width="56"/>
+              <path d="M280.0 200 V300" stroke-width="120" stroke-linecap="butt"/>
+              </g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(68.0 40.0) rotate(-5 50 50)">
+              <path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" stroke="#0B2A63" stroke-width="52"/>
+              <path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" stroke="#2F63C4" stroke-width="30"/>
+              <path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" stroke="#4D8BF0" stroke-width="23" transform="translate(-1.5 -2.5)"/>
+              </g>
+              <g mask="url(#m0)"><path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" transform="translate(68.0 40.0) rotate(-5 50 50) translate(-6 -7)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="7"/></g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(160.0 33.0) rotate(4 50 50)">
+              <path d="M16 16 H84 M50 16 V88" stroke="#0B2A63" stroke-width="52"/>
+              <path d="M16 16 H84 M50 16 V88" stroke="#1F8651" stroke-width="30"/>
+              <path d="M16 16 H84 M50 16 V88" stroke="#35B071" stroke-width="23" transform="translate(-1.5 -2.5)"/>
+              </g>
+              <g mask="url(#m1)"><path d="M16 16 H84 M50 16 V88" transform="translate(160.0 33.0) rotate(4 50 50) translate(-6 -7)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="7"/></g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(252.0 45.0) rotate(-3 50 50)">
+              <path d="M76 14 H26 V86 H76 M26 50 H64" stroke="#0B2A63" stroke-width="52"/>
+              <path d="M76 14 H26 V86 H76 M26 50 H64" stroke="#D99A14" stroke-width="30"/>
+              <path d="M76 14 H26 V86 H76 M26 50 H64" stroke="#F7C22E" stroke-width="23" transform="translate(-1.5 -2.5)"/>
+              </g>
+              <g mask="url(#m2)"><path d="M76 14 H26 V86 H76 M26 50 H64" transform="translate(252.0 45.0) rotate(-3 50 50) translate(-6 -7)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="7"/></g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(344.0 36.0) rotate(5 50 50)">
+              <path d="M18 88 V14 L50 58 L82 14 V88" stroke="#0B2A63" stroke-width="52"/>
+              <path d="M18 88 V14 L50 58 L82 14 V88" stroke="#B83A45" stroke-width="30"/>
+              <path d="M18 88 V14 L50 58 L82 14 V88" stroke="#E5535C" stroke-width="23" transform="translate(-1.5 -2.5)"/>
+              </g>
+              <g mask="url(#m3)"><path d="M18 88 V14 L50 58 L82 14 V88" transform="translate(344.0 36.0) rotate(5 50 50) translate(-6 -7)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="7"/></g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(22.0 147.0) rotate(4 50 50)">
+              <path d="M50 12 C24 12 16 34 16 50 C16 70 28 88 50 88 C72 88 84 70 84 50 C84 30 76 12 50 12 Z M60 66 L86 92" stroke="#0B2A63" stroke-width="52"/>
+              <path d="M50 12 C24 12 16 34 16 50 C16 70 28 88 50 88 C72 88 84 70 84 50 C84 30 76 12 50 12 Z M60 66 L86 92" stroke="#B83A45" stroke-width="30"/>
+              <path d="M50 12 C24 12 16 34 16 50 C16 70 28 88 50 88 C72 88 84 70 84 50 C84 30 76 12 50 12 Z M60 66 L86 92" stroke="#E5535C" stroke-width="23" transform="translate(-1.5 -2.5)"/>
+              </g>
+              <g mask="url(#m4)"><path d="M50 12 C24 12 16 34 16 50 C16 70 28 88 50 88 C72 88 84 70 84 50 C84 30 76 12 50 12 Z M60 66 L86 92" transform="translate(22.0 147.0) rotate(4 50 50) translate(-6 -7)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="7"/></g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(114.0 155.0) rotate(-4 50 50)">
+              <path d="M20 14 V56 C20 80 34 88 50 88 C66 88 80 80 80 56 V14" stroke="#0B2A63" stroke-width="52"/>
+              <path d="M20 14 V56 C20 80 34 88 50 88 C66 88 80 80 80 56 V14" stroke="#6E9E1C" stroke-width="30"/>
+              <path d="M20 14 V56 C20 80 34 88 50 88 C66 88 80 80 80 56 V14" stroke="#9CCB35" stroke-width="23" transform="translate(-1.5 -2.5)"/>
+              </g>
+              <g mask="url(#m5)"><path d="M20 14 V56 C20 80 34 88 50 88 C66 88 80 80 80 56 V14" transform="translate(114.0 155.0) rotate(-4 50 50) translate(-6 -7)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="7"/></g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(206.0 144.0) rotate(3 50 50)">
+              <path d="M76 14 H26 V86 H76 M26 50 H64" stroke="#0B2A63" stroke-width="52"/>
+              <path d="M76 14 H26 V86 H76 M26 50 H64" stroke="#D99A14" stroke-width="30"/>
+              <path d="M76 14 H26 V86 H76 M26 50 H64" stroke="#F7C22E" stroke-width="23" transform="translate(-1.5 -2.5)"/>
+              </g>
+              <g mask="url(#m6)"><path d="M76 14 H26 V86 H76 M26 50 H64" transform="translate(206.0 144.0) rotate(3 50 50) translate(-6 -7)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="7"/></g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(298.0 154.0) rotate(-5 50 50)">
+              <path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" stroke="#0B2A63" stroke-width="52"/>
+              <path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" stroke="#2F63C4" stroke-width="30"/>
+              <path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" stroke="#4D8BF0" stroke-width="23" transform="translate(-1.5 -2.5)"/>
+              </g>
+              <g mask="url(#m7)"><path d="M76 26 C68 12 30 10 26 32 C22 52 78 46 76 70 C74 92 32 94 22 76" transform="translate(298.0 154.0) rotate(-5 50 50) translate(-6 -7)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="7"/></g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(390.0 148.0) rotate(4 50 50)">
+              <path d="M16 16 H84 M50 16 V88" stroke="#0B2A63" stroke-width="52"/>
+              <path d="M16 16 H84 M50 16 V88" stroke="#1F8651" stroke-width="30"/>
+              <path d="M16 16 H84 M50 16 V88" stroke="#35B071" stroke-width="23" transform="translate(-1.5 -2.5)"/>
+              </g>
+              <g mask="url(#m8)"><path d="M16 16 H84 M50 16 V88" transform="translate(390.0 148.0) rotate(4 50 50) translate(-6 -7)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="7"/></g>
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#FFFFFF" stroke-width="25.0">
+              <path d="M16 88 L50 12 L84 88 M30 62 H70" transform="translate(60 282) scale(0.36)"/>
+              <path d="M82 28 C74 16 62 12 50 12 C28 12 16 32 16 50 C16 70 28 88 50 88 C62 88 74 84 82 72" transform="translate(118 282) scale(0.36)"/>
+              <path d="M16 88 L50 12 L84 88 M30 62 H70" transform="translate(176 282) scale(0.36)"/>
+              <path d="M22 12 V88 H42 C70 88 84 72 84 50 C84 28 70 12 42 12 Z" transform="translate(234 282) scale(0.36)"/>
+              <path d="M76 14 H26 V86 H76 M26 50 H64" transform="translate(292 282) scale(0.36)"/>
+              <path d="M18 88 V14 L50 58 L82 14 V88" transform="translate(350 282) scale(0.36)"/>
+              <path d="M16 12 L50 50 L84 12 M50 50 V88" transform="translate(408 282) scale(0.36)"/>
+              </g>
+              </svg>
+            </div>
+            <dl class="meta rise" style="--d: 0.15s">
+              <dt>${_('Certificate ID')}</dt><dd>${short_id}</dd>
+              <dt>${_('Issued')}</dt><dd>${issued}</dd>
+            </dl>
+          </header>
+
+          <div class="middle">
+            <div class="words">
+              <div class="eyebrow rise" style="--d: 0.25s">${_('Certificate of completion')}</div>
+              <p class="lead rise" style="--d: 0.34s">${_('This certifies that')}</p>
+              <h1 class="name rise ${'' if has_name else 'name--missing'}" style="--d: 0.43s">${learner_name if has_name else _('Name not set')}</h1>
+              <div class="iris rise" style="--d: 0.55s"></div>
+              <p class="lead2 rise" style="--d: 0.62s">${_('has successfully completed')}</p>
+              <p class="course rise" style="--d: 0.7s">${course_title}</p>
+              <div class="course-meta rise" style="--d: 0.8s">
+                % if level:
+                <span class="level"><span class="gauge" aria-hidden="true">
+                  % for i in range(level_count):
+                  <i class="${'on' if i < level_index else ''}"></i>
+                  % endfor
+                </span>${_('{level} level').format(level=level)}</span>
+                <span class="sep" aria-hidden="true"></span>
+                % endif
+                % if course_code:
+                <span>${_('Course {code}').format(code=course_code)}</span>
+                % endif
+              </div>
+            </div>
+
+            <div class="seal-wrap"
+                 aria-label="${_('Final grade {grade} percent').format(grade=grade_pct) if grade_pct is not None else _('Certificate seal')}">
+              <div class="halo" aria-hidden="true"></div>
+              <svg id="seal" viewBox="0 0 420 420" aria-hidden="true"
+                   data-year="${issued_year}" data-level-index="${level_index}" data-level-count="${level_count}"
+                   data-label="${_('FINAL GRADE')}" data-ring="${brand_name.upper()}  ·  ${_('CERTIFICATE OF COMPLETION').upper()}"></svg>
+            </div>
+          </div>
+
+          <footer class="bottom">
+            <div class="sigs rise" style="--d: 0.95s">
+              % for s in signatories[:3]:
+              <div class="sig">
+                % if s.get('signature_image_path'):
+                <img class="sig-img" src="${s.get('signature_image_path')}" alt="">
+                % else:
+                <div class="sig-script" aria-hidden="true">${s.get('name')}</div>
+                % endif
+                <div class="sig-line"></div>
+                <div class="sig-name">${s.get('name')}</div>
+                <div class="sig-role">${', '.join([x for x in (s.get('title'), s.get('organization')) if x])}</div>
+              </div>
+              % endfor
+            </div>
+
+            <div class="verify rise" style="--d: 1.1s">
+              <div class="txt">
+                <span class="label">${_('Verify')}</span>
+                <span class="url"><span>${verify_host}</span><span>/certificates/${cert_id[:8]}</span></span>
+              </div>
+              <div class="qr" id="qr" role="img" aria-label="${_('QR code that opens this certificate')}"></div>
+            </div>
+          </footer>
+        </div>
+      </article>
+    </div>
+
+    <p class="foot">${_('Issued by {brand}. Anyone can confirm this certificate at the address on it.').format(brand=brand_name)}</p>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script>
+    (function () {
+      var NS = 'http://www.w3.org/2000/svg';
+      var W = 1414, H = 1000;
+      var cert = document.getElementById('cert');
+      var gradeAttr = cert.getAttribute('data-grade');
+      var GRADE = gradeAttr === '' ? null : Math.max(0, Math.min(100, parseInt(gradeAttr, 10))) / 100;
+
+      function el(name, attrs, parent) {
+        var n = document.createElementNS(NS, name);
+        for (var k in attrs) { n.setAttribute(k, attrs[k]); }
+        if (parent) { parent.appendChild(n); }
+        return n;
+      }
+      function pathFrom(pts, close) {
+        var d = 'M' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
+        for (var i = 1; i < pts.length; i++) { d += 'L' + pts[i][0].toFixed(1) + ' ' + pts[i][1].toFixed(1); }
+        return d + (close ? 'Z' : '');
+      }
+      function withLen(path, delay) {
+        // a hidden SVG (the frame on phones) can't be measured; fall back
+        var len = 4000;
+        try { len = Math.ceil(path.getTotalLength()); } catch (e) { len = 4000; }
+        path.style.setProperty('--len', len);
+        path.style.setProperty('--d', delay + 's');
+        path.classList.add('draw');
+      }
+
+      // starfield: seeded, static texture
+      (function () {
+        var svg = document.getElementById('stars');
+        var s = 7;
+        function rnd() { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }
+        for (var i = 0; i < 150; i++) {
+          el('circle', { cx: (rnd() * W).toFixed(1), cy: (rnd() * H).toFixed(1), r: (0.4 + rnd() * 1.1).toFixed(2),
+            fill: 'rgba(233,238,250,' + (0.18 + rnd() * 0.5).toFixed(2) + ')' }, svg);
+        }
+      })();
+
+      // guilloche frame: interlaced waves along each side, tapered into corner rosettes
+      (function () {
+        var svg = document.getElementById('frame');
+        var inset = 36, amp = 11;
+        var x0 = inset, y0 = inset, x1 = W - inset, y1 = H - inset;
+        var sides = [
+          { ax: x0, ay: y0, bx: x1, by: y0, nx: 0, ny: -1 },
+          { ax: x1, ay: y0, bx: x1, by: y1, nx: 1, ny: 0 },
+          { ax: x1, ay: y1, bx: x0, by: y1, nx: 0, ny: 1 },
+          { ax: x0, ay: y1, bx: x0, by: y0, nx: -1, ny: 0 }
+        ];
+        sides.forEach(function (sd, si) {
+          var len = Math.hypot(sd.bx - sd.ax, sd.by - sd.ay);
+          var periods = Math.round(len / 36);
+          for (var fam = 0; fam < 2; fam++) {
+            var count = fam === 0 ? 6 : 3;
+            for (var k = 0; k < count; k++) {
+              var pts = [];
+              var phase = (k / count) * Math.PI * 2 + fam * 0.4;
+              var a = fam === 0 ? amp : amp * 0.62;
+              var f = fam === 0 ? periods : Math.round(periods * 1.5);
+              for (var t = 0; t <= 1.0001; t += 1 / (len / 2)) {
+                var taper = Math.pow(Math.sin(Math.PI * t), 0.45);
+                var off = a * taper * Math.sin(2 * Math.PI * f * t + phase);
+                pts.push([sd.ax + (sd.bx - sd.ax) * t + sd.nx * off, sd.ay + (sd.by - sd.ay) * t + sd.ny * off]);
+              }
+              withLen(el('path', { d: pathFrom(pts), 'class': fam === 0 ? 'wave' : 'wave-2' }, svg), si * 0.12 + k * 0.03);
+            }
+          }
+        });
+        [[x0, y0], [x1, y0], [x1, y1], [x0, y1]].forEach(function (c, ci) {
+          for (var j = 0; j < 10; j++) {
+            var pts = [];
+            for (var t = 0; t <= Math.PI * 2 + 0.02; t += 0.03) {
+              var r = 13 + 5 * Math.sin(6 * t + (j * Math.PI) / 5);
+              pts.push([c[0] + r * Math.cos(t), c[1] + r * Math.sin(t)]);
+            }
+            withLen(el('path', { d: pathFrom(pts, true), 'class': 'corner-rose' }, svg), 0.5 + ci * 0.1);
+          }
+        });
+        var ri = 62;
+        withLen(el('rect', { x: ri, y: ri, width: W - 2 * ri, height: H - 2 * ri, 'class': 'rule' }, svg), 0.2);
+        [[ri, ri], [W - ri, ri], [W - ri, H - ri], [ri, H - ri], [W / 2, ri], [W / 2, H - ri]].forEach(function (c) {
+          el('line', { x1: c[0] - 6, y1: c[1], x2: c[0] + 6, y2: c[1], 'class': 'tick' }, svg);
+          el('line', { x1: c[0], y1: c[1] - 6, x2: c[0], y2: c[1] + 6, 'class': 'tick' }, svg);
+        });
+      })();
+
+      // the seal: rosette, lettering, dial, grade ring, level gauge
+      (function () {
+        var svg = document.getElementById('seal');
+        var C = 210;
+        var year = svg.getAttribute('data-year');
+        var ringText = svg.getAttribute('data-ring') + (year ? '  ·  ' + year : '') + '  ·  ';
+        var levelIndex = parseInt(svg.getAttribute('data-level-index'), 10) || 0;
+        var levelCount = parseInt(svg.getAttribute('data-level-count'), 10) || 3;
+        var defs = el('defs', {}, svg);
+        var grad = el('linearGradient', { id: 'iris', x1: '0', y1: '0', x2: '1', y2: '1' }, defs);
+        el('stop', { offset: '0', 'stop-color': 'var(--c-iris-1)' }, grad);
+        el('stop', { offset: '0.55', 'stop-color': 'var(--c-iris-2)' }, grad);
+        el('stop', { offset: '1', 'stop-color': 'var(--c-iris-3)' }, grad);
+
+        var spin = el('g', { 'class': 'seal-spin' }, svg);
+        for (var j = 0; j < 30; j++) {
+          var pts = [];
+          for (var t = 0; t <= Math.PI * 2 + 0.01; t += 0.012) {
+            var r = 192 + 10 * Math.sin(15 * t + (j * 2 * Math.PI) / 30) + 3 * Math.cos(45 * t);
+            pts.push([C + r * Math.cos(t), C + r * Math.sin(t)]);
+          }
+          withLen(el('path', { d: pathFrom(pts, true), 'class': 'rosette', stroke: 'url(#iris)' }, spin), 0.3 + j * 0.015);
+        }
+        el('path', { id: 'sealArc', d: 'M ' + C + ' ' + C + ' m -158 0 a 158 158 0 1 1 316 0 a 158 158 0 1 1 -316 0', fill: 'none' }, spin);
+        var txt = el('text', { 'class': 'seal-text' }, spin);
+        var tp = el('textPath', { href: '#sealArc', startOffset: '0', textLength: (2 * Math.PI * 158 - 14).toFixed(0), lengthAdjust: 'spacing' }, txt);
+        tp.textContent = ringText;
+        for (var d = 0; d < 360; d += 3) {
+          var major = d % 30 === 0;
+          var ang = (d * Math.PI) / 180;
+          var r1 = major ? 132 : 136, r2 = 144;
+          el('line', { x1: C + r1 * Math.cos(ang), y1: C + r1 * Math.sin(ang), x2: C + r2 * Math.cos(ang), y2: C + r2 * Math.sin(ang),
+            'class': major ? 'dial-major' : 'dial' }, spin);
+        }
+        var R = 112, circ = 2 * Math.PI * R;
+        var fill = GRADE === null ? 1 : GRADE;
+        el('circle', { cx: C, cy: C, r: R, 'class': 'track' }, svg);
+        var m = el('circle', { cx: C, cy: C, r: R, 'class': 'meter', transform: 'rotate(-90 ' + C + ' ' + C + ')' }, svg);
+        m.style.strokeDasharray = circ.toFixed(1);
+        m.style.strokeDashoffset = (circ * (1 - fill)).toFixed(1);
+        m.style.setProperty('--circ', circ.toFixed(1));
+        m.style.setProperty('--off', (circ * (1 - fill)).toFixed(1));
+        if (levelIndex > 0) {
+          var gw = 20, gg = 3, total = levelCount * gw + (levelCount - 1) * gg;
+          for (var i = 0; i < levelCount; i++) {
+            el('rect', { x: C - total / 2 + i * (gw + gg), y: 150, width: gw, height: 5, rx: 2.5, 'class': i < levelIndex ? 'gauge-on' : 'gauge-off' }, svg);
+          }
+        }
+        var num = el('text', { x: C, y: 232, 'text-anchor': 'middle', 'class': 'seal-num', 'font-size': GRADE === null ? 44 : 66 }, svg);
+        if (GRADE === null) {
+          num.textContent = '✓';
+        } else {
+          num.textContent = Math.round(GRADE * 100);
+          el('tspan', { 'font-size': 30, dx: 2 }, num).textContent = '%';
+        }
+        el('text', { x: C, y: 266, 'text-anchor': 'middle', 'class': 'seal-lbl' }, svg).textContent =
+          GRADE === null ? 'COMPLETED' : svg.getAttribute('data-label');
+      })();
+
+      // QR: opens this certificate's own page (hidden if the library didn't load)
+      (function () {
+        var host = document.getElementById('qr');
+        if (typeof qrcode !== 'function') { return; }
+        var q = qrcode(0, 'M');
+        q.addData(cert.getAttribute('data-url'));
+        q.make();
+        var n = q.getModuleCount();
+        var svg = el('svg', { viewBox: '0 0 ' + n + ' ' + n, 'shape-rendering': 'crispEdges' }, host);
+        for (var r = 0; r < n; r++) {
+          for (var c = 0; c < n; c++) {
+            if (q.isDark(r, c)) { el('rect', { x: c, y: r, width: 1.02, height: 1.02, 'class': 'm' }, svg); }
+          }
+        }
+      })();
+
+      // owner actions
+      var copy = document.getElementById('copy-link');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var url = copy.getAttribute('data-url');
+          var done = function () { var t = copy.textContent; copy.textContent = 'Link copied'; setTimeout(function () { copy.textContent = t; }, 1800); };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link', url); });
+          } else {
+            window.prompt('Copy this link', url);
+          }
+        });
+      }
+      var print = document.getElementById('print-cert');
+      if (print) { print.addEventListener('click', function () { window.print(); }); }
+    })();
+  </script>
+</body>
+</html>
