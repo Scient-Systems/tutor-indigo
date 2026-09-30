@@ -33,3 +33,18 @@ if (config.pluginSlots && config.pluginSlots['org.openedx.frontend.layout.footer
     });
   }
 }
+
+// SQA: SqaMainMenu (SqaHeaderNav.jsx) already has Membership and Pathways, so
+// hide the sqa_payment plugin's own links where it is in use. FPF applies
+// operations in order and a Hide only finds widgets inserted before it; the
+// sqa_payment inserts come after ours, so the hides go here, at the very end.
+[
+  ['org.openedx.frontend.layout.header_desktop_main_menu.v1', ''],
+  ['org.openedx.frontend.layout.header_mobile_main_menu.v1', '-mobile'],
+].forEach(([slot, suffix]) => {
+  const sqaSlot = config.pluginSlots && config.pluginSlots[slot];
+  if (!sqaSlot || !sqaSlot.plugins.some((p) => p.widget && p.widget.id === `sqa_main_menu${suffix}`)) { return; }
+  ['sqa-membership-link', 'sqa-pathways-link'].forEach((id) => {
+    sqaSlot.plugins.push({ op: PLUGIN_OPERATIONS.Hide, widgetId: `${id}${suffix}` });
+  });
+});

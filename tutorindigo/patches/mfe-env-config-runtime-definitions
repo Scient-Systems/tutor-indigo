@@ -7,3 +7,5 @@
 {{- patch("SqaDashboardEmptyState.jsx") }}
 {{- patch("SqaTokenCard.jsx") }}
 {{- patch("SqaCatalog.jsx") }}
+{{- patch("SqaHeaderNav.jsx") }}
+{{- patch("SqaCourseAboutEnroll.jsx") }}

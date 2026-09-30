@@ -471,8 +471,63 @@ PLUGIN_SLOTS.add_items(
         },
         """,
         ),
+        (
+            # Course about page: our enroll button shows the membership
+            # requirement and why a learner can't enroll, where the stock one
+            # says only "An error occurred". SqaCourseAboutEnroll.jsx.
+            "catalog",
+            "org.openedx.frontend.catalog.course_about_page.enrollment_button",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_course_about_enroll',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaCourseAboutEnroll,
+            },
+        },
+        """,
+        ),
     ]
 )
+
+# One header main menu in every MFE with the standard header (SqaHeaderNav.jsx).
+# Without it each MFE showed its own: the catalog lost Membership, the payment
+# MFE lost Discover New and Membership. The sqa_payment plugin's own Membership
+# and Pathways links (learner dashboard only) are hidden in
+# patches/mfe-env-config-runtime-final, since SqaMainMenu has both.
+SQA_HEADER_NAV_MFES = ["learner-dashboard", "catalog", "profile", "account", "sqa-payment"]
+
+for mfe in SQA_HEADER_NAV_MFES:
+    for slot, suffix in (
+        ("org.openedx.frontend.layout.header_desktop_main_menu.v1", ""),
+        ("org.openedx.frontend.layout.header_mobile_main_menu.v1", "-mobile"),
+    ):
+        PLUGIN_SLOTS.add_item(
+            (
+                mfe,
+                slot,
+                f"""
+        {{
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        }},
+        {{
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {{
+                id: 'sqa_main_menu{suffix}',
+                type: DIRECT_PLUGIN,
+                priority: 1,
+                RenderWidget: SqaMainMenu,
+            }},
+        }},
+        """,
+            )
+        )
 
 # Level order for the catalog. SQA_CATALOG_LEVELS is set by sqa_django_app; the
 # guard keeps this theme working on a platform without it (levels then show in
