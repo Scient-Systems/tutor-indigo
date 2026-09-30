@@ -583,6 +583,16 @@ PLUGIN_SLOTS.add_items(
                 RenderWidget: SqaMembershipInstrument,
             },
         },
+        {
+            // Sends verified users who haven't picked a plan to the plans
+            // page. Renders nothing. SqaPlanRedirect.jsx.
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_plan_redirect',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaPlanRedirect,
+            },
+        },
         """,
         ),
         (

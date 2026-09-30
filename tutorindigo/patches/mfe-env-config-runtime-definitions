@@ -9,3 +9,4 @@
 {{- patch("SqaCatalog.jsx") }}
 {{- patch("SqaHeaderNav.jsx") }}
 {{- patch("SqaCourseAboutEnroll.jsx") }}
+{{- patch("SqaPlanRedirect.jsx") }}
