@@ -596,6 +596,29 @@ PLUGIN_SLOTS.add_items(
         """,
         ),
         (
+            # Course-end page: our course-complete screen instead of the stock
+            # celebration (Open edX certificate art, alert colours). The stock
+            # body is hidden by brand-openedx _course-exit.scss. Needs the
+            # courseware.microfrontend_course_exit_page waffle flag, which is
+            # what makes the last unit's Next button lead here.
+            "learning",
+            "org.openedx.frontend.learning.course_exit_view_courses.v1",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Hide,
+            widgetId: 'default_contents',
+        },
+        {
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_course_complete',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaCourseComplete,
+            },
+        },
+        """,
+        ),
+        (
             # AI token card in the profile form (below Education field).
             "profile",
             "org.openedx.frontend.profile.additional_profile_fields.v1",
@@ -647,7 +670,7 @@ PLUGIN_SLOTS.add_items(
 #
 # This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
-BRAND_DIST_REF = "43997211874cd9882a30784eef4a213dba8b0986"
+BRAND_DIST_REF = "19c6936ff2fdf8bd93cb0f195d4e6af3953b4844"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 
 # Which theme a visitor gets before they have chosen one. frontend-platform
