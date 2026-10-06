@@ -1,9 +1,11 @@
 
 const ThemedLogo = () => {
   const BASE_URL = getConfig().LMS_BASE_URL;
-  // A site with its own brand profile serves its logos from brand-openedx.
-  const logoUrl = getConfig().INDIGO_LOGO_URL || `${BASE_URL}/static/indigo/images/logo.png`;
-  const logoWhiteUrl = getConfig().INDIGO_LOGO_WHITE_URL || `${BASE_URL}/static/indigo/images/logo-white.png`;
+  // A site with its own brand profile serves its logo from brand-openedx. The
+  // header is a night band in both themes, so that is its light wordmark.
+  const siteLogo = getConfig().INDIGO_LOGO_WHITE_URL;
+  const logoUrl = siteLogo || `${BASE_URL}/static/indigo/images/logo.png`;
+  const logoWhiteUrl = siteLogo || `${BASE_URL}/static/indigo/images/logo-white.png`;
   const brandName = getConfig().INDIGO_BRAND_NAME || getConfig().SITE_NAME || "Home";
 
   return (

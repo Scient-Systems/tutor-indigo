@@ -32,9 +32,12 @@ config: t.Dict[str, t.Dict[str, t.Any]] = {
         # the footer logo to the site's own home page.
         "BRAND_NAME": "Stem Quest Academy",
         "BRAND_URL": "https://stemquestacademy.com/",
-        # A folder pair in brand-openedx: assets/<profile>/ (logo.png,
-        # logo-white.png, mark.png) and dist-<profile>/ (that palette's
-        # stylesheets). Empty = the logo in the image and dist/.
+        # A folder pair in brand-openedx: assets/<profile>/ and dist-<profile>/
+        # (that palette's stylesheets). Empty = the logo in the image and dist/.
+        # The assets folder holds logo-white.png (light wordmark: the header,
+        # footer and login page are night bands in both themes, so this is the
+        # one shown on the site), logo.png (dark wordmark, for light surfaces:
+        # emails and the printed certificate) and mark.png (favicon).
         "BRAND_PROFILE": "",
         # Catalog banner line. Empty = the default in SqaCatalog.jsx.
         "CATALOG_HEADLINE": "",
@@ -686,7 +689,7 @@ PLUGIN_SLOTS.add_items(
 #
 # This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
-BRAND_DIST_REF = "19c6936ff2fdf8bd93cb0f195d4e6af3953b4844"
+BRAND_DIST_REF = "e4a2fdb6d4f1da3ca20537fa7972481611a6e4b0"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 # Rendered by Tutor per site: "dist", or "dist-<INDIGO_BRAND_PROFILE>" for a site
 # with its own palette. Not an f-string: the braces are Jinja's.
@@ -786,11 +789,10 @@ _BRAND_MFE_KEYS = """
 {name}["SQA_CATALOG_HEADLINE"] = {{{{ INDIGO_CATALOG_HEADLINE | tojson }}}}
 {{% endif %}}
 {{% if INDIGO_BRAND_PROFILE %}}
-{name}["INDIGO_LOGO_URL"] = "{assets}/logo.png"
 {name}["INDIGO_LOGO_WHITE_URL"] = "{assets}/logo-white.png"
-{name}["LOGO_URL"] = "{assets}/logo.png"
+{name}["LOGO_URL"] = "{assets}/logo-white.png"
 {name}["LOGO_WHITE_URL"] = "{assets}/logo-white.png"
-{name}["LOGO_TRADEMARK_URL"] = "{assets}/logo.png"
+{name}["LOGO_TRADEMARK_URL"] = "{assets}/logo-white.png"
 {name}["FAVICON_URL"] = "{assets}/mark.png"
 {{% endif %}}
 """
@@ -809,7 +811,7 @@ INDIGO_BRAND_URL = {{{{ INDIGO_BRAND_URL | tojson }}}}
 {{% if INDIGO_BRAND_PROFILE %}}
 INDIGO_LOGO_URL = "{assets}/logo.png"
 INDIGO_LOGO_WHITE_URL = "{assets}/logo-white.png"
-LOGO_URL = INDIGO_LOGO_URL
+LOGO_URL = INDIGO_LOGO_WHITE_URL
 LOGO_URL_PNG = INDIGO_LOGO_URL
 {{% endif %}}
 """

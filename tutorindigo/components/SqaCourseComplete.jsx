@@ -83,7 +83,7 @@ const SqaCourseComplete = () => {
       ? { key: 'course', label: 'Back to the course', sub: 'Revisit any unit', href: courseHome }
       : { key: 'progress', label: 'See my progress', sub: 'Find what is left to pass', href: progress },
     { key: 'dashboard', label: 'My courses', sub: 'Everything you are enrolled in', href: `${config.LMS_BASE_URL}/dashboard` },
-    { key: 'discover', label: 'Discover new courses', sub: 'Find your next quest', href: `${config.LMS_BASE_URL}/courses` },
+    { key: 'discover', label: 'Discover new courses', sub: 'Find your next course', href: `${config.LMS_BASE_URL}/courses` },
   ];
 
   const arrow = (
