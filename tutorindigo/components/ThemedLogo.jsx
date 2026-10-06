@@ -7,6 +7,9 @@ const ThemedLogo = () => {
   const logoUrl = siteLogo || `${BASE_URL}/static/indigo/images/logo.png`;
   const logoWhiteUrl = siteLogo || `${BASE_URL}/static/indigo/images/logo-white.png`;
   const brandName = getConfig().INDIGO_BRAND_NAME || getConfig().SITE_NAME || "Home";
+  // A site that hides registration (SHOW_REGISTRATION_LINKS false) should not
+  // offer Sign Up in the header either; the stock header shows it regardless.
+  const hideSignUp = getConfig().SHOW_REGISTRATION_LINKS === false;
 
   return (
     <>
@@ -21,6 +24,7 @@ const ThemedLogo = () => {
           [data-paragon-theme-variant="dark"] #root header .logo-white {
             display: block;
           }
+          ${hideSignUp ? '#root header a[href*="/register"] { display: none; }' : ''}
         `}
       </style>
       <a href={`${BASE_URL}/dashboard`} title={brandName} className="logo">

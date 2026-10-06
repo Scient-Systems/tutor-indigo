@@ -45,6 +45,9 @@ config: t.Dict[str, t.Dict[str, t.Any]] = {
         "SHOW_MEMBERSHIP": True,
         # AI token card on the profile page.
         "SHOW_AI_TOKENS": True,
+        # The mode a visitor starts in before choosing one: "dark" or "light".
+        # The toggle and a saved choice always win.
+        "DEFAULT_THEME": "dark",
         # Footer links are dictionaries with a "title" and "url"
         # To remove all links, run:
         # tutor config save --set INDIGO_FOOTER_NAV_LINKS=[]
@@ -704,7 +707,10 @@ BRAND_PROFILE_ASSETS = BRAND_DIST_CDN + "/assets/{{ INDIGO_BRAND_PROFILE }}"
 # (shown to logged-in users) can still switch to light. For dark ONLY, drop the
 # "light" entry from paragon_theme_urls["variants"] and set
 # INDIGO_ENABLE_DARK_TOGGLE to False so the toggle isn't a dead button.
-SQA_DEFAULT_THEME_VARIANT = "dark"
+# INDIGO_DEFAULT_THEME, rendered per site by Tutor (the braces are Jinja's).
+# Both entries carry it, so the starting mode does not depend on the system.
+DEFAULT_THEME_LIGHT_ENTRY = "{{ INDIGO_DEFAULT_THEME }}"
+DEFAULT_THEME_DARK_ENTRY = "{{ 'light' if INDIGO_DEFAULT_THEME == 'light' else 'dark' }}"
 
 paragon_theme_urls = {
     # $paragonVersion is substituted by frontend-platform with each MFE's own
@@ -716,8 +722,8 @@ paragon_theme_urls = {
         },
     },
     "defaults": {
-        "light": SQA_DEFAULT_THEME_VARIANT,
-        "dark": "dark",
+        "light": DEFAULT_THEME_LIGHT_ENTRY,
+        "dark": DEFAULT_THEME_DARK_ENTRY,
     },
     "variants": {
         "light": {
@@ -742,8 +748,8 @@ frontend_base_theme = {
         "url": f"{BRAND_DIST_CDN}/{BRAND_DIST_DIR}/core.min.css",
     },
     "defaults": {
-        "light": SQA_DEFAULT_THEME_VARIANT,
-        "dark": "dark",
+        "light": DEFAULT_THEME_LIGHT_ENTRY,
+        "dark": DEFAULT_THEME_DARK_ENTRY,
     },
     "variants": {
         "light": {
