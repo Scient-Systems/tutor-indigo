@@ -10,7 +10,10 @@ const SqaTokenCard = () => {
   const [tokens, setTokens] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
+  const hidden = config.INDIGO_SHOW_AI_TOKENS === false;
+
   useEffect(() => {
+    if (hidden) { return undefined; }
     let alive = true;
     getAuthenticatedHttpClient()
       .get(`${config.LMS_BASE_URL}/sqa/api/proxy/tokens/`)
@@ -27,7 +30,7 @@ const SqaTokenCard = () => {
   const tokenPageUrl = `${config.LMS_BASE_URL}/sqa/tokens/`;
   const activeToken = tokens[0] || null;
 
-  if (!loaded) return null;
+  if (hidden || !loaded) return null;
 
   return (
     <div className="pgn__form-group mb-4">

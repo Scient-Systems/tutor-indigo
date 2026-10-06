@@ -42,7 +42,8 @@ const SqaMainMenu = () => {
     <>
       <SqaNavLink href={`${lms}/dashboard`} label="Courses" match="/learner-dashboard" />
       <SqaNavLink href={`${lms}/courses`} label="Discover New" match="/catalog" />
-      <SqaNavLink href="/sqa-payment" label="Membership" match="/sqa-payment" />
+      {getConfig().INDIGO_SHOW_MEMBERSHIP !== false
+        && <SqaNavLink href="/sqa-payment" label="Membership" match="/sqa-payment" />}
       {pathways && <SqaNavLink href="/sqa-payment/pathways" label="Pathways" match="/sqa-payment/pathways" />}
     </>
   );

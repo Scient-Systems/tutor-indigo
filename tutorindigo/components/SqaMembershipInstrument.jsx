@@ -12,8 +12,11 @@ const SqaMembershipInstrument = () => {
   const [levels, setLevels] = useState(null);
   const [membership, setMembership] = useState(null);
   const [memberLoaded, setMemberLoaded] = useState(false);
+  // A site that sells no plans (INDIGO_SHOW_MEMBERSHIP false) shows no panel.
+  const hidden = config.INDIGO_SHOW_MEMBERSHIP === false;
 
   useEffect(() => {
+    if (hidden) { return undefined; }
     let alive = true;
     const http = getAuthenticatedHttpClient();
     http.get(`${config.LMS_BASE_URL}/sqa/api/levels/`)
@@ -65,6 +68,8 @@ const SqaMembershipInstrument = () => {
       .toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
       .toUpperCase()
     : null;
+
+  if (hidden) { return null; }
 
   return (
     <aside id="sqa-rail">

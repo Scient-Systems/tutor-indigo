@@ -12,7 +12,7 @@
 
 const SqaPlanRedirect = () => {
   useEffect(() => {
-    if (!getAuthenticatedUser()) { return; }
+    if (!getAuthenticatedUser() || getConfig().INDIGO_SHOW_MEMBERSHIP === false) { return; }
     getAuthenticatedHttpClient()
       .get(`${getConfig().LMS_BASE_URL}/sqa/api/billing/status/`)
       .then(({ data }) => {

@@ -26,6 +26,22 @@ config: t.Dict[str, t.Dict[str, t.Any]] = {
         "WELCOME_MESSAGE": "Where curious minds become builders",
         "PRIMARY_COLOR": "#101A33",  # Meridian ink (deep navy)
         "ENABLE_DARK_TOGGLE": True,
+        # Per-site brand. One theme and one set of images serve every site; a
+        # site that is not Stem Quest Academy (the training demo) sets these.
+        # The name in the footer and its logo link. An empty BRAND_URL links
+        # the footer logo to the site's own home page.
+        "BRAND_NAME": "Stem Quest Academy",
+        "BRAND_URL": "https://stemquestacademy.com/",
+        # A folder pair in brand-openedx: assets/<profile>/ (logo.png,
+        # logo-white.png, mark.png) and dist-<profile>/ (that palette's
+        # stylesheets). Empty = the logo in the image and dist/.
+        "BRAND_PROFILE": "",
+        # Catalog banner line. Empty = the default in SqaCatalog.jsx.
+        "CATALOG_HEADLINE": "",
+        # Membership panel, Membership menu link and the plan picker redirect.
+        "SHOW_MEMBERSHIP": True,
+        # AI token card on the profile page.
+        "SHOW_AI_TOKENS": True,
         # Footer links are dictionaries with a "title" and "url"
         # To remove all links, run:
         # tutor config save --set INDIGO_FOOTER_NAV_LINKS=[]
@@ -672,6 +688,10 @@ PLUGIN_SLOTS.add_items(
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
 BRAND_DIST_REF = "19c6936ff2fdf8bd93cb0f195d4e6af3953b4844"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
+# Rendered by Tutor per site: "dist", or "dist-<INDIGO_BRAND_PROFILE>" for a site
+# with its own palette. Not an f-string: the braces are Jinja's.
+BRAND_DIST_DIR = "{{ 'dist-' ~ INDIGO_BRAND_PROFILE if INDIGO_BRAND_PROFILE else 'dist' }}"
+BRAND_PROFILE_ASSETS = BRAND_DIST_CDN + "/assets/{{ INDIGO_BRAND_PROFILE }}"
 
 # Which theme a visitor gets before they have chosen one. frontend-platform
 # (v8.7 useParagonTheme.getDefaultThemeVariant) picks, in order: the only
@@ -689,7 +709,7 @@ paragon_theme_urls = {
     "core": {
         "urls": {
             "default": "https://cdn.jsdelivr.net/npm/@openedx/paragon@$paragonVersion/dist/core.min.css",
-            "brandOverride": f"{BRAND_DIST_CDN}/dist/core.min.css",
+            "brandOverride": f"{BRAND_DIST_CDN}/{BRAND_DIST_DIR}/core.min.css",
         },
     },
     "defaults": {
@@ -699,14 +719,14 @@ paragon_theme_urls = {
     "variants": {
         "light": {
             "urls": {
-                "default": f"{BRAND_DIST_CDN}/dist/light.min.css",
-                "brandOverride": f"{BRAND_DIST_CDN}/dist/light.min.css",
+                "default": f"{BRAND_DIST_CDN}/{BRAND_DIST_DIR}/light.min.css",
+                "brandOverride": f"{BRAND_DIST_CDN}/{BRAND_DIST_DIR}/light.min.css",
             },
         },
         "dark": {
             "urls": {
-                "default": f"{BRAND_DIST_CDN}/dist/dark.min.css",
-                "brandOverride": f"{BRAND_DIST_CDN}/dist/dark.min.css",
+                "default": f"{BRAND_DIST_CDN}/{BRAND_DIST_DIR}/dark.min.css",
+                "brandOverride": f"{BRAND_DIST_CDN}/{BRAND_DIST_DIR}/dark.min.css",
             }
         },
     },
@@ -716,7 +736,7 @@ paragon_theme_urls = {
 # from PARAGON_THEME_URLS. Same brand fork, same SHA pin, different shape.
 frontend_base_theme = {
     "core": {
-        "url": f"{BRAND_DIST_CDN}/dist/core.min.css",
+        "url": f"{BRAND_DIST_CDN}/{BRAND_DIST_DIR}/core.min.css",
     },
     "defaults": {
         "light": SQA_DEFAULT_THEME_VARIANT,
@@ -724,10 +744,10 @@ frontend_base_theme = {
     },
     "variants": {
         "light": {
-            "url": f"{BRAND_DIST_CDN}/dist/light.min.css",
+            "url": f"{BRAND_DIST_CDN}/{BRAND_DIST_DIR}/light.min.css",
         },
         "dark": {
-            "url": f"{BRAND_DIST_CDN}/dist/dark.min.css",
+            "url": f"{BRAND_DIST_CDN}/{BRAND_DIST_DIR}/dark.min.css",
         },
     },
 }
@@ -751,6 +771,52 @@ FRONTEND_SITE_CONFIG["commonAppConfig"][
     "INDIGO_FOOTER_NAV_LINKS"
 ] = {{ INDIGO_FOOTER_NAV_LINKS }}
 """,
+    )
+)
+
+# Per-site brand, read at runtime: by the MFE components through the MFE config
+# API and by the LMS templates through Django settings. Runtime because the
+# images are built once for every site; nothing here is baked into them.
+_BRAND_MFE_KEYS = """
+{name}["INDIGO_BRAND_NAME"] = {{{{ INDIGO_BRAND_NAME | tojson }}}}
+{name}["INDIGO_BRAND_URL"] = {{{{ INDIGO_BRAND_URL | tojson }}}}
+{name}["INDIGO_SHOW_MEMBERSHIP"] = {{{{ INDIGO_SHOW_MEMBERSHIP }}}}
+{name}["INDIGO_SHOW_AI_TOKENS"] = {{{{ INDIGO_SHOW_AI_TOKENS }}}}
+{{% if INDIGO_CATALOG_HEADLINE %}}
+{name}["SQA_CATALOG_HEADLINE"] = {{{{ INDIGO_CATALOG_HEADLINE | tojson }}}}
+{{% endif %}}
+{{% if INDIGO_BRAND_PROFILE %}}
+{name}["INDIGO_LOGO_URL"] = "{assets}/logo.png"
+{name}["INDIGO_LOGO_WHITE_URL"] = "{assets}/logo-white.png"
+{name}["LOGO_URL"] = "{assets}/logo.png"
+{name}["LOGO_WHITE_URL"] = "{assets}/logo-white.png"
+{name}["LOGO_TRADEMARK_URL"] = "{assets}/logo.png"
+{name}["FAVICON_URL"] = "{assets}/mark.png"
+{{% endif %}}
+"""
+hooks.Filters.ENV_PATCHES.add_item(
+    (
+        "mfe-lms-common-settings",
+        _BRAND_MFE_KEYS.format(name="MFE_CONFIG", assets=BRAND_PROFILE_ASSETS)
+        + _BRAND_MFE_KEYS.format(
+            name='FRONTEND_SITE_CONFIG["commonAppConfig"]', assets=BRAND_PROFILE_ASSETS
+        ),
+    )
+)
+_BRAND_LMS_SETTINGS = """
+INDIGO_BRAND_NAME = {{{{ INDIGO_BRAND_NAME | tojson }}}}
+INDIGO_BRAND_URL = {{{{ INDIGO_BRAND_URL | tojson }}}}
+{{% if INDIGO_BRAND_PROFILE %}}
+INDIGO_LOGO_URL = "{assets}/logo.png"
+INDIGO_LOGO_WHITE_URL = "{assets}/logo-white.png"
+LOGO_URL = INDIGO_LOGO_URL
+LOGO_URL_PNG = INDIGO_LOGO_URL
+{{% endif %}}
+"""
+hooks.Filters.ENV_PATCHES.add_item(
+    (
+        "openedx-lms-common-settings",
+        _BRAND_LMS_SETTINGS.format(assets=BRAND_PROFILE_ASSETS),
     )
 )
 

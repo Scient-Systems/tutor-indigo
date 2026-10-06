@@ -10,6 +10,23 @@
 <% footer = get_footer(is_secure=is_secure) %>
 <% icp_license_info = getattr(settings, 'ICP_LICENSE_INFO', {})%>
 <%namespace name='static' file='static_content.html'/>
+## Per-site brand (tutor-indigo INDIGO_BRAND_* settings, read at runtime: the
+## image is built once for every site). Defaults are Stem Quest Academy's.
+<%
+  brand_name = getattr(settings, 'INDIGO_BRAND_NAME', 'Stem Quest Academy')
+  brand_url = getattr(settings, 'INDIGO_BRAND_URL', 'https://stemquestacademy.com/') or '/'
+  ## static.url() writes into the page and returns nothing, so it is called
+  ## in place below, never in this block.
+  brand_logo = getattr(settings, 'INDIGO_LOGO_URL', '')
+  brand_logo_white = getattr(settings, 'INDIGO_LOGO_WHITE_URL', '')
+%>
+% if brand_logo_white:
+<style>
+  .wrapper-footer .footer-logo-white { display: none; }
+  body.indigo-dark-theme .wrapper-footer .footer-logo { display: none; }
+  body.indigo-dark-theme .wrapper-footer .footer-logo-white { display: inline; }
+</style>
+% endif
 <!-- NEW IN INDIGO update footer -->
 % if uses_bootstrap:
 <div class="wrapper wrapper-footer">
@@ -25,8 +42,15 @@
     <div class="powered-area">
       <ul class="logo-list">
         <li>
-          <a href="https://stemquestacademy.com/" rel="noopener" target="_blank">
-            <img src="${static.url('images/logo.png')}" alt="Stem Quest Academy" height="40" />
+          <a href="${brand_url}" rel="noopener"
+            % if brand_url.startswith('http'):
+            target="_blank"
+            % endif
+          >
+            <img class="footer-logo" src="${brand_logo or static.url('images/logo.png')}" alt="${brand_name}" height="40" />
+            % if brand_logo_white:
+            <img class="footer-logo-white" src="${brand_logo_white}" alt="${brand_name}" height="40" />
+            % endif
           </a>
         </li>
       </ul>
@@ -43,7 +67,7 @@
     </nav>
     {% endif %}
   </div>
-  <span class="copyright-site">© ${datetime.now().year} Stem Quest Academy. All Rights Reserved.</span>
+  <span class="copyright-site">© ${datetime.now().year} ${brand_name}. All Rights Reserved.</span>
     <div class="colophon">
 
       % if context.get('include_language_selector', footer_language_selector_is_enabled()):
@@ -67,8 +91,15 @@
       <div class="powered-area">
         <ul class="logo-list">
           <li>
-            <a href="https://stemquestacademy.com/" rel="noopener" target="_blank">
-              <img src="${static.url('images/logo.png')}" alt="Stem Quest Academy" height="40" />
+            <a href="${brand_url}" rel="noopener"
+              % if brand_url.startswith('http'):
+              target="_blank"
+              % endif
+            >
+              <img class="footer-logo" src="${brand_logo or static.url('images/logo.png')}" alt="${brand_name}" height="40" />
+              % if brand_logo_white:
+              <img class="footer-logo-white" src="${brand_logo_white}" alt="${brand_name}" height="40" />
+              % endif
             </a>
           </li>
         </ul>
@@ -85,7 +116,7 @@
       </nav>
       {% endif %}
     </div>
-    <span class="copyright-site">© ${datetime.now().year} Stem Quest Academy. All Rights Reserved.</span>
+    <span class="copyright-site">© ${datetime.now().year} ${brand_name}. All Rights Reserved.</span>
       <div class="colophon">
 
         % if context.get('include_language_selector', footer_language_selector_is_enabled()):
