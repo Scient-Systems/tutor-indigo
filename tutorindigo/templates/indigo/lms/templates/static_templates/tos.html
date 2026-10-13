@@ -10,13 +10,79 @@
         <h1>
             <%block name="pageheader">${page_header or _("Terms of Service")}</%block>
         </h1>
-        <p>
-            <%block name="pagecontent">${page_content or _("This page left intentionally blank. Feel free to add your own content.")}</%block>
-        </p>
-        <!-- NEW IN INDIGO: add graphic image -->
-        <div class="graphic-img">
-            <img src="${static.url('images/tos.svg')}" alt="Stem Quest Academy" />
-            <img class="dark" src="${static.url('images/tos-dark.svg')}" alt="Stem Quest Academy" />
+        <div class="sqa-legal">
+            <p class="sqa-legal-date">Last updated: October 13, 2026</p>
+
+            <p>These terms are the agreement between you and Stem Quest Academy, a Scient Systems company based in Ohio, USA. They cover this learning site, its courses and its memberships. By creating an account or using the site, you agree to them. If you do not agree, please do not use the site.</p>
+
+            <h2>1. Who can use the site</h2>
+            <p>Our courses are made for students, and for the parents, teachers and schools who support them.</p>
+            <ul>
+                <li>If you are under 18, you need the permission of a parent or guardian to use the site. They agree to these terms on your behalf.</li>
+                <li>If you are under 13, a parent or guardian must create your account and manage it for you.</li>
+                <li>If a school or other organization gives you access, it may also have its own rules, and it may see your progress in the courses it gave you.</li>
+            </ul>
+
+            <h2>2. Your account</h2>
+            <ul>
+                <li>Give us correct details when you sign up, and keep them up to date.</li>
+                <li>Keep your password private. You are responsible for what happens in your account.</li>
+                <li>One account is for one person. Do not share it or sell it.</li>
+                <li>Tell us straight away if you think someone else has used your account.</li>
+            </ul>
+
+            <h2>3. Courses and certificates</h2>
+            <p>We add, change and retire courses over time, and we cannot promise that a course will stay available forever. A certificate from us shows that you completed a course on this site. It is not a school credit, a degree or a professional license.</p>
+
+            <h2>4. Memberships and payments</h2>
+            <ul>
+                <li>Some courses are free. Others need a paid membership. The price is shown before you pay.</li>
+                <li>Paid memberships are subscriptions. They renew automatically each billing period until you cancel, and your payment method is charged at each renewal.</li>
+                <li>You can cancel at any time from your membership page. Your plan then stays active until the end of the period you have already paid for, and it does not renew. You can undo a cancellation before that period ends.</li>
+                <li>We do not refund a period that has already started, unless the law says we must. If you think you were charged by mistake, contact us and we will look into it.</li>
+                <li>Payments are handled by Stripe. We do not see or store your full card number.</li>
+                <li>We may change prices. If the price of your plan changes, we will tell you before your next renewal so you can cancel if you do not want to continue.</li>
+                <li>Plans for schools and organizations are arranged directly with us and may have their own written terms.</li>
+            </ul>
+
+            <h2>5. AI tools in courses</h2>
+            <p>Some courses include tools that use artificial intelligence, for example a chatbot you build or test.</p>
+            <ul>
+                <li>AI answers can be wrong, out of date or made up. Check anything important before you rely on it.</li>
+                <li>Do not type private information into an AI tool, such as your full name, address, phone number or passwords.</li>
+                <li>AI tools have usage limits. We may pause your access to them if the limits are passed or the tools are misused.</li>
+            </ul>
+
+            <h2>6. How to behave</h2>
+            <p>We want this to be a safe place to learn. When you use the site, do not:</p>
+            <ul>
+                <li>bully, threaten or harass anyone;</li>
+                <li>post anything hateful, sexual, violent or illegal;</li>
+                <li>share another person's private information;</li>
+                <li>cheat, or hand in work that is not yours as your own;</li>
+                <li>try to break into the site, get around its limits, or disturb it for other people;</li>
+                <li>copy our course materials to sell them or share them publicly.</li>
+            </ul>
+
+            <h2>7. Your work and ours</h2>
+            <p>The courses, videos, activities, text and design on this site belong to Stem Quest Academy or to the people who licensed them to us. You may use them for your own learning. You may not copy, resell or republish them without our written permission.</p>
+            <p>Work you create here stays yours. By posting it on the site, you allow us to store it and show it where the course needs it, for example to your teacher or in a class discussion.</p>
+
+            <h2>8. Suspending or closing an account</h2>
+            <p>You can stop using the site at any time and can ask us to delete your account. We may suspend or close an account that breaks these terms or puts other users at risk. Where we reasonably can, we will tell you why.</p>
+
+            <h2>9. What we do not promise</h2>
+            <p>We work hard to keep the site running and the courses correct, but we provide the site "as is". We do not promise that it will always be available, free of errors, or right for a particular purpose such as passing an exam or getting a job.</p>
+            <p>As far as the law allows, Stem Quest Academy is not liable for indirect or consequential losses that come from using the site, and our total liability to you is limited to the amount you paid us in the 12 months before the claim. Nothing in these terms takes away rights that the law does not let us limit.</p>
+
+            <h2>10. Changes to these terms</h2>
+            <p>We may update these terms. When we do, we will change the date at the top of this page, and if the change is important we will tell you by email or on the site. If you keep using the site after a change, you accept the new terms.</p>
+
+            <h2>11. Governing law</h2>
+            <p>These terms are governed by the laws of the State of Ohio, USA. Any dispute will be handled by the courts located in Ohio, unless the law where you live gives you the right to use your local courts.</p>
+
+            <h2>12. Contact us</h2>
+            <p>Questions about these terms? Use the <a href="https://www.stemquestacademy.com/#contact">contact form on our website</a>. See also our <a href="/privacy">Privacy Policy</a>.</p>
         </div>
     </section>
 </main>

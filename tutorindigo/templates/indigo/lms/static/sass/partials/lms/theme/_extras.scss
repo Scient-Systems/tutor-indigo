@@ -309,6 +309,28 @@ nav.wrapper-preview-menu {
       color: $primary;
       text-decoration: underline;
     }
+    // Terms of Service and Privacy Policy: long text, so a readable measure
+    .sqa-legal {
+      max-width: 46rem;
+      h2 {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 26px;
+        margin: 32px 0 10px;
+        color: $dark;
+      }
+      ul {
+        margin: 0 0 20px;
+        padding-left: 22px;
+        list-style: disc;
+      }
+      li {
+        margin: 0 0 8px;
+      }
+      .sqa-legal-date {
+        font-size: 14px;
+      }
+    }
     .graphic-img {
       margin: 0 auto;
       max-width: 178px;
@@ -385,6 +407,9 @@ body.view-student-notes {
   .container.about {
     color: $text-color-primary;
     h1 {
+      color: $primary-d;
+    }
+    .sqa-legal h2 {
       color: $primary-d;
     }
     a {
@@ -1326,6 +1351,9 @@ body.indigo-dark-theme {
   .container.about {
     color: $text-color-primary;
     h1 {
+      color: $primary-d;
+    }
+    .sqa-legal h2 {
       color: $primary-d;
     }
     a {
