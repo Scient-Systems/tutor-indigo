@@ -687,7 +687,7 @@ PLUGIN_SLOTS.add_items(
 #
 # This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
-BRAND_DIST_REF = "e4a2fdb6d4f1da3ca20537fa7972481611a6e4b0"
+BRAND_DIST_REF = "e606984fddd8a20b3ac28c26d08c64c54cb9e2db"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 # Rendered by Tutor per site: "dist", or "dist-<INDIGO_BRAND_PROFILE>" for a site
 # with its own palette. Not an f-string: the braces are Jinja's.
