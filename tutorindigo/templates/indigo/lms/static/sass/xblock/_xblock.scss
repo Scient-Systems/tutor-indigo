@@ -580,6 +580,13 @@
                     color: $primary-d;
                 }
             }
-        }  
+        }
     }
+}
+
+// Under Submit, Open edX prints "Grading method: Last Score" in a bare div after
+// the attempts count. Our questions allow one attempt, so it says nothing a
+// learner can use. Keep the attempts line, hide this one (both themes).
+div.problem .submission-feedback > div {
+    display: none;
 }

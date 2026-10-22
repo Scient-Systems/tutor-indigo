@@ -344,6 +344,16 @@ PLUGIN_SLOTS.add_items(
             "learning_help_slot",
             """
         {
+            // A visible way out of the course, back to the dashboard.
+            // SqaExitCourse.jsx; styled in brand-openedx (.sqa-exit-course).
+            op: PLUGIN_OPERATIONS.Insert,
+            widget: {
+                id: 'sqa_exit_course',
+                type: DIRECT_PLUGIN,
+                RenderWidget: SqaExitCourse,
+            },
+        },
+        {
             op: PLUGIN_OPERATIONS.Insert,
             widget: {
                 id: 'theme_switch_button',
@@ -687,7 +697,7 @@ PLUGIN_SLOTS.add_items(
 #
 # This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
-BRAND_DIST_REF = "e606984fddd8a20b3ac28c26d08c64c54cb9e2db"
+BRAND_DIST_REF = "f129927b30d04dabb089db8a0b53b5f56d7af926"
 BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 # Rendered by Tutor per site: "dist", or "dist-<INDIGO_BRAND_PROFILE>" for a site
 # with its own palette. Not an f-string: the braces are Jinja's.

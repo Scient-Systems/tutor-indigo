@@ -11,3 +11,4 @@
 {{- patch("SqaCourseAboutEnroll.jsx") }}
 {{- patch("SqaPlanRedirect.jsx") }}
 {{- patch("SqaCourseComplete.jsx") }}
+{{- patch("SqaExitCourse.jsx") }}
