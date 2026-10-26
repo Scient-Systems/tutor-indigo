@@ -155,7 +155,10 @@ all_mfes_needing_deps = [
     "catalog",
 ]
 
-mfe_deps_install = "RUN npm install react-responsive @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core"
+mfe_deps_install = (
+    "RUN npm install react-responsive @fortawesome/react-fontawesome"
+    " @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core"
+)
 
 for mfe in all_mfes_needing_deps:
     hooks.Filters.ENV_PATCHES.add_item(
@@ -527,7 +530,13 @@ PLUGIN_SLOTS.add_items(
 # MFE lost Discover New and Membership. The sqa_payment plugin's own Membership
 # and Pathways links (learner dashboard only) are hidden in
 # patches/mfe-env-config-runtime-final, since SqaMainMenu has both.
-SQA_HEADER_NAV_MFES = ["learner-dashboard", "catalog", "profile", "account", "sqa-payment"]
+SQA_HEADER_NAV_MFES = [
+    "learner-dashboard",
+    "catalog",
+    "profile",
+    "account",
+    "sqa-payment",
+]
 
 for mfe in SQA_HEADER_NAV_MFES:
     for slot, suffix in (
@@ -698,10 +707,14 @@ PLUGIN_SLOTS.add_items(
 # This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
 BRAND_DIST_REF = "f129927b30d04dabb089db8a0b53b5f56d7af926"
-BRAND_DIST_CDN = f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
+BRAND_DIST_CDN = (
+    f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
+)
 # Rendered by Tutor per site: "dist", or "dist-<INDIGO_BRAND_PROFILE>" for a site
 # with its own palette. Not an f-string: the braces are Jinja's.
-BRAND_DIST_DIR = "{{ 'dist-' ~ INDIGO_BRAND_PROFILE if INDIGO_BRAND_PROFILE else 'dist' }}"
+BRAND_DIST_DIR = (
+    "{{ 'dist-' ~ INDIGO_BRAND_PROFILE if INDIGO_BRAND_PROFILE else 'dist' }}"
+)
 BRAND_PROFILE_ASSETS = BRAND_DIST_CDN + "/assets/{{ INDIGO_BRAND_PROFILE }}"
 
 # Which theme a visitor gets before they have chosen one. frontend-platform
@@ -715,7 +728,9 @@ BRAND_PROFILE_ASSETS = BRAND_DIST_CDN + "/assets/{{ INDIGO_BRAND_PROFILE }}"
 # INDIGO_DEFAULT_THEME, rendered per site by Tutor (the braces are Jinja's).
 # Both entries carry it, so the starting mode does not depend on the system.
 DEFAULT_THEME_LIGHT_ENTRY = "{{ INDIGO_DEFAULT_THEME }}"
-DEFAULT_THEME_DARK_ENTRY = "{{ 'light' if INDIGO_DEFAULT_THEME == 'light' else 'dark' }}"
+DEFAULT_THEME_DARK_ENTRY = (
+    "{{ 'light' if INDIGO_DEFAULT_THEME == 'light' else 'dark' }}"
+)
 
 paragon_theme_urls = {
     # $paragonVersion is substituted by frontend-platform with each MFE's own

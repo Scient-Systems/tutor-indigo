@@ -2,9 +2,9 @@ name: Run tests
 
 on:
   pull_request:
-    branches: [ release, main ]
+    branches: [ verawood/indigo, release, main ]
   push:
-    branches: [ release, main ]
+    branches: [ verawood/indigo, release, main ]
 
 jobs:
   tests:
