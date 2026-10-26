@@ -330,6 +330,14 @@ nav.wrapper-preview-menu {
       .sqa-legal-date {
         font-size: 14px;
       }
+      .sqa-legal-summary {
+        border-left: 4px solid $primary;
+        padding: 2px 0 2px 18px;
+        margin: 24px 0 8px;
+        h2 {
+          margin-top: 0;
+        }
+      }
     }
     .graphic-img {
       margin: 0 auto;
