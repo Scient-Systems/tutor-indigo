@@ -395,6 +395,68 @@ nav.wrapper-preview-menu {
         }
       }
     }
+
+    // "More..." (tabs that don't fit). The button also matched the old LMS
+    // .light-button rules: grey gradient, white text-shadow and an inset grey
+    // glow when focused or open. Make it a plain tab in every state.
+    li.more .more-button {
+      &,
+      &:hover,
+      &:focus,
+      &:active,
+      &[aria-expanded="true"] {
+        border: 0 !important;
+        border-radius: 0;
+        background: none !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        color: $light-dark;
+      }
+      &:hover {
+        color: $dark;
+      }
+      &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+      }
+    }
+
+    // its menu: a card with plain left-aligned rows (the tab rules above gave
+    // every row a 2px border, centred text and a 32px right margin)
+    .more-responsive-menu {
+      margin-top: 6px;
+      padding: 6px 0;
+      border: 1px solid $gray-light;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 18px 40px -22px rgba(16, 26, 51, 0.35);
+      overflow: hidden;
+
+      li {
+        margin: 0;
+      }
+
+      li a {
+        display: block;
+        margin: 0;
+        padding: 9px 16px;
+        border: 0 !important;
+        text-align: left;
+        white-space: nowrap;
+        color: $light-dark;
+
+        &:hover,
+        &:focus {
+          background: #F1F4FA;
+          color: $dark;
+          text-decoration: none;
+        }
+        &.active {
+          color: $dark;
+          font-weight: 600;
+        }
+      }
+    }
   }
 }
 body.view-statictab, body.view-instructordash, body.view-teams, body.view-wiki,
@@ -998,6 +1060,38 @@ body.indigo-dark-theme {
           &.active {
             color: $text-color-d;
             border-color: $text-color-d;
+          }
+        }
+      }
+
+      li.more .more-button {
+        &,
+        &:hover,
+        &:focus,
+        &:active,
+        &[aria-expanded="true"] {
+          color: $text-color-primary;
+        }
+        &:hover {
+          color: $text-color-d;
+        }
+      }
+
+      .more-responsive-menu {
+        border-color: $border-color-d;
+        background: $light-overlay-d;
+        box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.55);
+
+        li a {
+          color: $text-color-primary;
+
+          &:hover,
+          &:focus {
+            background: $primary-light-d;
+            color: $text-color-d;
+          }
+          &.active {
+            color: $text-color-d;
           }
         }
       }
