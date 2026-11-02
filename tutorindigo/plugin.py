@@ -726,7 +726,7 @@ PLUGIN_SLOTS.add_items(
 #
 # This is the tip of Scient-Systems/brand-openedx verawood/indigo. Keep it in
 # step with versions.yml (also_pinned_at: BRAND_DIST_REF).
-BRAND_DIST_REF = "6b8c6a4f09823ef06210c9d4e2534f2be8bb47dc"
+BRAND_DIST_REF = "1112da513cc7f1852ef3021dc142281975a8b869"
 BRAND_DIST_CDN = (
     f"https://cdn.jsdelivr.net/gh/Scient-Systems/brand-openedx@{BRAND_DIST_REF}"
 )
