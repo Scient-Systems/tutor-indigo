@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Cookies from 'universal-cookie';
 
 import { getConfig } from '@edx/frontend-platform';

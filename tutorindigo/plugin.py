@@ -366,6 +366,26 @@ PLUGIN_SLOTS.add_items(
         },
         """,
         ),
+        (
+            # The discussions course header has no learning_help_slot (header v8
+            # LearningHeader), so the theme toggle and Exit course were missing
+            # there. Wrap the whole header and portal them into its row.
+            # SqaHeaderExtras.jsx.
+            "discussions",
+            "org.openedx.frontend.layout.header_discussions.v1",
+            """
+        {
+            op: PLUGIN_OPERATIONS.Wrap,
+            widgetId: 'default_contents',
+            wrapper: ({ component }) => (
+                <>
+                    {component}
+                    <SqaHeaderExtras />
+                </>
+            ),
+        },
+        """,
+        ),
     ]
 )
 
