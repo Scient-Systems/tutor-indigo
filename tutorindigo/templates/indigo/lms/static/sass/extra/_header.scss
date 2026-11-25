@@ -86,6 +86,70 @@ header.global-header {
             display: none;
         }
     }
+
+    // Inside a course: the same lockup and Exit course pill as the Learning MFE
+    // header (brand-openedx paragon/_header.scss: .course-title-lockup,
+    // .sqa-exit-course), so custom tabs don't switch headers under the learner.
+    &.in-course {
+        .header-logo .course-header {
+            @include media-breakpoint-up(lg) {
+                display: block;
+                margin: 13px 0 0 22px;
+                line-height: 1.25;
+            }
+            .course-org-number {
+                display: block;
+                font-size: 14px;
+                color: $sqa-star-dim;
+            }
+            .course-name {
+                display: block;
+                max-width: 42vw;
+                margin-top: 2px;
+                overflow: hidden;
+                font-size: 16px;
+                font-weight: 600;
+                color: $sqa-star;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+        .sqa-exit-course {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 12px;
+            padding: 6px 14px;
+            border-radius: 50rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: $sqa-star;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            white-space: nowrap;
+            text-decoration: none;
+
+            &:hover,
+            &:focus {
+                background: rgba(255, 255, 255, 0.18);
+                color: #FFFFFF;
+                text-decoration: none;
+            }
+            // Phone: the arrow carries it alone, as in the MFE.
+            @include media-breakpoint-down(md) {
+                margin-right: 8px;
+                padding: 8px 10px;
+                span {
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    overflow: hidden;
+                    clip: rect(0 0 0 0);
+                    white-space: nowrap;
+                }
+            }
+        }
+    }
     .nav-links {
         width: 100%;
         .main {

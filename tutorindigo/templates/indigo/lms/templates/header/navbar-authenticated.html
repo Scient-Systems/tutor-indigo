@@ -34,10 +34,17 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
     lms_scheme = (getattr(settings, 'LMS_ROOT_URL', '') or '').split('://')[0] or 'https'
     mfe_base = lms_scheme + '://' + mfe_base
   membership_url = (mfe_base + '/sqa-payment') if mfe_base else ''
+
+  ## Old-LMS pages inside a course (custom tabs, instructor dashboard, wiki)
+  ## get the course header the Learning MFE shows. About pages redirect to
+  ## the Catalog MFE on Verawood; the /about check is a guard if that changes.
+  in_course = bool(course) and not request.path.rstrip('/').endswith('/about')
 %>
 
 <div class="nav-links">
   <div class="main">
+  ## Inside a course the Learning MFE header has no site nav, only the way out.
+  % if not in_course:
     % if show_dashboard_tabs:
       <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
         <a class="${'active ' if reverse('dashboard') == request.path else ''}tab-nav-link" href="${reverse('dashboard')}"
@@ -69,8 +76,18 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
           </a>
       </div>
     % endif
+  % endif
   </div>
   <div class="secondary d-flex align-items-center">
+    % if in_course:
+      ## Mirrors SqaExitCourse.jsx in the Learning MFE header.
+      <a class="sqa-exit-course" href="${reverse('dashboard')}">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>${_("Exit course")}</span>
+      </a>
+    % endif
     <%include file="./theme-toggle-button.html" />
     <%include file="user_dropdown.html"/>
   </div>

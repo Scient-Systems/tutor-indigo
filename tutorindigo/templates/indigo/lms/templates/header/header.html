@@ -47,7 +47,13 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
   <script src="${static.url('js/responsive-nav.js')}"></script>
 </%block>
 
-<header class="global-header ${'slim' if course else ''}">
+<%
+  ## Old-LMS pages inside a course (custom tabs, instructor dashboard, wiki)
+  ## get the course header the Learning MFE shows. About pages redirect to
+  ## the Catalog MFE on Verawood; the /about check is a guard if that changes.
+  in_course = bool(course) and not request.path.rstrip('/').endswith('/about')
+%>
+<header class="global-header ${'slim' if course else ''} ${'in-course' if in_course else ''}">
     <div class="header-container">
     % if settings.FEATURES.get('ENABLE_COOKIE_POLICY_BANNER', use_cookie_banner):
         ${static.renderReact(

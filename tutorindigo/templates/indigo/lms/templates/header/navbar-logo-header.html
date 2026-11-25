@@ -37,10 +37,10 @@ enterprise_customer_link = get_enterprise_learner_portal(request)
         % endif
     </a>
   % endif
-  % if course:
+  % if course and not request.path.rstrip('/').endswith('/about'):
+    ## Same lockup as the Learning MFE header: "ORG NUMBER" over the title.
     <div class="course-header">
-      <span class="provider">${course.display_org_with_default}:</span>
-      <span class="course-number">${course.display_number_with_default}</span>
+      <span class="course-org-number">${course.display_org_with_default} ${course.display_number_with_default}</span>
       <%
       display_name = course.display_name_with_default
       if settings.FEATURES.get('CUSTOM_COURSES_EDX', False):
