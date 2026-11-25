@@ -94,7 +94,10 @@ const SqaCourseAboutEnroll = ({ ecommerceCheckout, onEcommerceCheckout, onEnroll
   }, []);
 
   const lms = getConfig().LMS_BASE_URL;
-  const plans = <a className="btn btn-primary" href="/sqa-payment">See membership plans</a>;
+  // No plans link on a site that sells no plans (INDIGO_SHOW_MEMBERSHIP false).
+  const plans = getConfig().INDIGO_SHOW_MEMBERSHIP === false
+    ? null
+    : <a className="btn btn-primary" href="/sqa-payment">See membership plans</a>;
 
   // Paid seats, and anonymous visitors: the stock flow already does the right thing.
   if (ecommerceCheckout || !user || !courseId) {

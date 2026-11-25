@@ -33,7 +33,10 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
   if mfe_base and '://' not in mfe_base:
     lms_scheme = (getattr(settings, 'LMS_ROOT_URL', '') or '').split('://')[0] or 'https'
     mfe_base = lms_scheme + '://' + mfe_base
-  membership_url = (mfe_base + '/sqa-payment') if mfe_base else ''
+  ## INDIGO_SHOW_MEMBERSHIP false (a site that sells no plans) hides the link,
+  ## as it already does in the MFE headers (SqaHeaderNav.jsx).
+  show_membership = (getattr(settings, 'MFE_CONFIG', None) or {}).get('INDIGO_SHOW_MEMBERSHIP', True) is not False
+  membership_url = (mfe_base + '/sqa-payment') if (mfe_base and show_membership) else ''
 
   ## Old-LMS pages inside a course (custom tabs, instructor dashboard, wiki)
   ## get the course header the Learning MFE shows. About pages redirect to
