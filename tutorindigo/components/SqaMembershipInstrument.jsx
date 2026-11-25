@@ -12,8 +12,10 @@ const SqaMembershipInstrument = () => {
   const [levels, setLevels] = useState(null);
   const [membership, setMembership] = useState(null);
   const [memberLoaded, setMemberLoaded] = useState(false);
-  // A site that sells no plans (INDIGO_SHOW_MEMBERSHIP false) shows no panel.
-  const hidden = config.INDIGO_SHOW_MEMBERSHIP === false;
+  // No panel while payments are off (payments_off switch, or INDIGO_SHOW_MEMBERSHIP
+  // false), and none until that is known. SqaFeatures.jsx.
+  const payments = useSqaPaymentsOn();
+  const hidden = payments !== true;
 
   useEffect(() => {
     if (hidden) { return undefined; }
@@ -42,7 +44,7 @@ const SqaMembershipInstrument = () => {
       setMemberLoaded(true);
     }
     return () => { alive = false; };
-  }, []);
+  }, [hidden]);
 
   const fallbackLevels = [
     { slug: 'free', display_name: 'Free', rank: 0 },

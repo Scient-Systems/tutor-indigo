@@ -28,6 +28,7 @@ const SqaMainMenu = () => {
   // Pathways only when its API answers: with the api_pathway switch off the
   // endpoint 404s, and a link to a dead page is worse than no link.
   const [pathways, setPathways] = useState(false);
+  const payments = useSqaPaymentsOn();
   useEffect(() => {
     if (!getAuthenticatedUser()) { return undefined; }
     let alive = true;
@@ -42,7 +43,7 @@ const SqaMainMenu = () => {
     <>
       <SqaNavLink href={`${lms}/dashboard`} label="Courses" match="/learner-dashboard" />
       <SqaNavLink href={`${lms}/courses`} label="Discover New" match="/catalog" />
-      {getConfig().INDIGO_SHOW_MEMBERSHIP !== false
+      {payments === true
         && <SqaNavLink href="/sqa-payment" label="Membership" match="/sqa-payment" />}
       {pathways && <SqaNavLink href="/sqa-payment/pathways" label="Pathways" match="/sqa-payment/pathways" />}
     </>

@@ -13,9 +13,11 @@
 const SqaPlanRedirect = () => {
   useEffect(() => {
     if (!getAuthenticatedUser() || getConfig().INDIGO_SHOW_MEMBERSHIP === false) { return; }
-    getAuthenticatedHttpClient()
-      .get(`${getConfig().LMS_BASE_URL}/sqa/api/billing/status/`)
-      .then(({ data }) => {
+    sqaFeatures()
+      .then((f) => (f.payments === false ? null
+        : getAuthenticatedHttpClient().get(`${getConfig().LMS_BASE_URL}/sqa/api/billing/status/`)))
+      .then((res) => {
+        const data = res && res.data;
         if (data && data.email_verified === true && data.plan_chosen === false) {
           window.location.replace('/sqa-payment/');
         }

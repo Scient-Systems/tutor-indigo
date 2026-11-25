@@ -73,6 +73,7 @@ const SqaCourseAboutEnroll = ({ ecommerceCheckout, onEcommerceCheckout, onEnroll
   const [eligible, setEligible] = useState(null);
   const [error, setError] = useState(null);
   const [pending, setPending] = useState(false);
+  const payments = useSqaPaymentsOn();
 
   useEffect(() => {
     if (!user || !courseId) { return undefined; }
@@ -94,8 +95,8 @@ const SqaCourseAboutEnroll = ({ ecommerceCheckout, onEcommerceCheckout, onEnroll
   }, []);
 
   const lms = getConfig().LMS_BASE_URL;
-  // No plans link on a site that sells no plans (INDIGO_SHOW_MEMBERSHIP false).
-  const plans = getConfig().INDIGO_SHOW_MEMBERSHIP === false
+  // No plans link while payments are off (SqaFeatures.jsx).
+  const plans = payments !== true
     ? null
     : <a className="btn btn-primary" href="/sqa-payment">See membership plans</a>;
 
